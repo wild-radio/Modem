@@ -7,10 +7,15 @@ static const char *const RX_COMMAND = "minimodem -R 44100 --rx 1200 -l 1.5 ";
 
 #include <cstdio>
 #include <string>
+#include <wiringPi.h>
 #include "../ModemInterface.hpp"
 
 class MiniModem : public ModemInterface {
 public:
+	MiniModem() {
+		wiringPiSetup();
+		pinMode (14, OUTPUT) ;
+	}
 	void write(const char *data, int size) override;
 	int read(char *data, int size) override;
 

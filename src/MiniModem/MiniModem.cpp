@@ -9,7 +9,9 @@ void MiniModem::write(const char *data, int size) {
 		throw StreamException(1, "Failed to open the stream!");
 	}
 
+	digitalWrite (14, HIGH);
 	fwrite(data, sizeof(char), (size_t) size, stream);
+	digitalWrite (14, LOW);
 	fclose(stream);
 }
 
