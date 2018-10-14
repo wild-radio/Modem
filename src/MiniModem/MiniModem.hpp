@@ -5,6 +5,8 @@ static const char *const TX_COMMAND = "minimodem -R 44100 --tx 1200 ";
 
 static const char *const RX_COMMAND = "minimodem -R 44100 --rx 1200 -l 1.5 ";
 
+static const int GPIO_PIN = 15;
+
 #include <cstdio>
 #include <string>
 #include <wiringPi.h>
@@ -14,7 +16,7 @@ class MiniModem : public ModemInterface {
 public:
 	MiniModem() {
 		wiringPiSetup();
-		pinMode (14, OUTPUT) ;
+		pinMode (GPIO_PIN, OUTPUT) ;
 	}
 	void write(const char *data, int size) override;
 	int read(char *data, int size) override;
