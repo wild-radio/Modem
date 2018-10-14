@@ -14,6 +14,11 @@ int main(int argc, char **argv) {
 
 	if (action == "tx") {
 		std::string data = std::string(argv[2]);
+
+		if (argc == 4) {
+			std::string options = std::string(argv[3]);
+			modem->setOptions(options);
+		}
 		modem->write(data.c_str(), (int) data.size());
 
 		return 0;
@@ -22,7 +27,7 @@ int main(int argc, char **argv) {
 	if (action == "rx") {
 		char buffer[200];
 		std::string options = std::string(argv[2]);
-		modem->setReadOptions(options);
+		modem->setOptions(options);
 		modem->read(buffer, 10);
 
 		std::cout << std::string(buffer) << std::endl;
