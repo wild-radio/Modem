@@ -1,9 +1,9 @@
 #ifndef MODEM_MINIMODEM_HPP
 #define MODEM_MINIMODEM_HPP
 
-static const char *const TX_COMMAND = "minimodem --tx 1200";
+static const char *const TX_COMMAND = "minimodem -R 44100 --tx 1200";
 
-static const char *const RX_COMMAND = "minimodem --rx 1200 -c 2.5 ";
+static const char *const RX_COMMAND = "minimodem -R 44100 --rx 1200 -c 2.5 ";
 
 #include <cstdio>
 #include <string>
