@@ -3,7 +3,8 @@
 #include <cstdio>
 
 void MiniModem::write(const char *data, int size) {
-	std::FILE *stream = popen(TX_COMMAND, "w");
+	std::string command = std::string(TX_COMMAND) + this->alsa_option;
+	std::FILE *stream = popen(command.c_str(), "w");
 
 	if (stream == nullptr) {
 		throw StreamException(1, "Failed to open the stream!");
@@ -17,7 +18,7 @@ void MiniModem::write(const char *data, int size) {
 
 int MiniModem::read(char *data, int size) {
 	std::string command = std::string(RX_COMMAND) + this->alsa_option;
-	
+
 	if (this->read_stream == nullptr) {
 		this->read_stream = popen(command.c_str(), "r");
 	}
