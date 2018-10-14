@@ -22,6 +22,7 @@ int main(int argc, char **argv) {
 	if (action == "rx") {
 		char buffer[200];
 		std::string options = std::string(argv[2]);
+		modem->setReadOptions(options);
 		modem->read(buffer, 10);
 
 		std::cout << std::string(buffer) << std::endl;
