@@ -12,6 +12,7 @@ void MiniModem::write(const char *data, int size) {
 
 	digitalWrite (GPIO_PIN, HIGH);
 	fwrite(data, sizeof(char), (size_t) size, stream);
+	delay(1000);
 	digitalWrite (GPIO_PIN, LOW);
 	fclose(stream);
 }
