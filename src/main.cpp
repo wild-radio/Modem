@@ -5,11 +5,6 @@
 int main(int argc, char **argv) {
 	ModemInterface *modem = ModemResolver::resolve();
 
-	if (argc < 3) {
-		std::cout << "Not enough paramteres!\n";
-		return 1;
-	}
-
 	std::string action = std::string(argv[1]);
 
 	if (action == "tx") {
@@ -25,11 +20,18 @@ int main(int argc, char **argv) {
 	}
 
 	if (action == "rx") {
-		char buffer[200];
-		std::string options = std::string(argv[2]);
-		modem->setOptions(options);
-		modem->read(buffer, 10);
 
-		std::cout << std::string(buffer) << std::endl;
+		if (argc == 3) {
+			std::string options = std::string(argv[3]);
+			modem->setOptions(options);
+		}
+
+		while (true) {
+			char buffer[200];
+			int size = modem->read(buffer, 1);
+			buffer[size] = 0;
+			std::cout << std::string(buffer) << std::flush;
+
+		}
 	}
 }

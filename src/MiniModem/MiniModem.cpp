@@ -12,13 +12,14 @@ void MiniModem::write(const char *data, int size) {
 
 	digitalWrite (GPIO_PIN, HIGH);
 	fwrite(data, sizeof(char), (size_t) size, stream);
-	delay(1000);
+	delay(500);
 	digitalWrite (GPIO_PIN, LOW);
+	delay(200);
 	fclose(stream);
 }
 
 int MiniModem::read(char *data, int size) {
-	std::string command = std::string(RX_COMMAND) + this->alsa_option;
+	std::string command = std::string(RX_COMMAND) + this->alsa_option + " 2>/dev/null";
 
 	if (this->read_stream == nullptr) {
 		this->read_stream = popen(command.c_str(), "r");
@@ -29,7 +30,6 @@ int MiniModem::read(char *data, int size) {
 	}
 
 	int read_size = (int) fread(data, sizeof(char), size, this->read_stream);
-	fclose(this->read_stream);
 	return read_size;
 }
 
