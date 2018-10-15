@@ -1,9 +1,14 @@
 #include <iostream>
 #include "ModemInterface.hpp"
 #include "ModemResolver.hpp"
+#include "WRCP/WRCPController.hpp"
 
 int main(int argc, char **argv) {
 	ModemInterface *modem = ModemResolver::resolve();
+	WRCPController controller;
+	controller.startReceiver();
+	controller.startTransmitter();
+	controller.mainLoop();
 
 	std::string action = std::string(argv[1]);
 
