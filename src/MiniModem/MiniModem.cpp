@@ -1,6 +1,5 @@
 #include "MiniModem.hpp"
 #include "StreamException.hpp"
-#include <cstdio>
 
 void MiniModem::write(const char *data, int size) {
 	std::string command = std::string(TX_COMMAND) + this->alsa_option;
@@ -10,12 +9,10 @@ void MiniModem::write(const char *data, int size) {
 		throw StreamException(1, "Failed to open the stream!");
 	}
 
-	digitalWrite (GPIO_PIN, HIGH);
+	this->ptt.push();
 	fwrite(data, sizeof(char), (size_t) size, stream);
-	delay(500);
-	digitalWrite (GPIO_PIN, LOW);
-	delay(200);
 	fclose(stream);
+	this->ptt.release();
 }
 
 int MiniModem::read(char *data, int size) {
