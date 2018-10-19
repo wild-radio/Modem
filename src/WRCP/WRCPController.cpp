@@ -18,7 +18,7 @@ void WRCPController::startTransmitter() {
 
 void WRCPController::mainLoop() {
 	if (this->isSlave()) {
-		this->sendInformPresence();
+		//this->sendInformPresence();
 	}
 
 	//this->sendAngleChange(1, 45, 45, 0);
@@ -26,7 +26,7 @@ void WRCPController::mainLoop() {
 //	this->sendRequestPhoto(1, 0);
 //	this->sendRequestSendingRights();
 //	this->sendPhoto(12315234, 0);
-
+	this->sendAngleChange(1, 45, 45, 0);
 	while (true) {
 		if (!this->incoming_packets.hasMessage())
 			continue;

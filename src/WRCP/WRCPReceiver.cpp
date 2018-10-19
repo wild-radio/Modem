@@ -10,7 +10,6 @@ void WRCPReceiver::run() {
 		int len = modem->readData(&byte, 1);
 		/*if (len == 0)
 			continue;*/
-		std::cout << byte << std::endl;
 		if (byte == 'W') {
 			this->receiving = true;
 			this->clearBuffer();
