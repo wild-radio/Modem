@@ -10,9 +10,6 @@ int main(int argc, char **argv) {
 //	ModemResolver::setOverride(new FileModem);
 
 	ModemInterface *modem = ModemResolver::resolve();
-	if (argc > 3) {
-		modem->setOptions(argv[2]);
-	}
 	WRCPController controller(std::stoi(std::string(argv[1])));
 	//TestModem::txToRx();
 	//TestModem::insertIntoBuffer((unsigned char *) "WRCP12121212121", 15);
