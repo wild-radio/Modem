@@ -10,6 +10,7 @@ void WRCPTransmitter::run() {
 			return;
 
 		//TODO: Maybe add a delay time here.
+
 		WRCP packet = this->outcoming_packets->pull();
 		modem->writeData(packet.getData(), WRCP_PACKET_SIZE);
 	}
