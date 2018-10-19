@@ -7,7 +7,7 @@ void WRCPTransmitter::run() {
 	ModemInterface *modem = ModemResolver::resolve();
 	while (true) {
 		if (!this->outcoming_packets->hasMessage())
-			return;
+			continue;
 
 		//TODO: Maybe add a delay time here.
 
