@@ -18,7 +18,7 @@ void WRCPTransmitter::run() {
 		bzero(data, 30);
 		unsigned char *wrcp_data = packet.getData();
 		memcpy(data + 13, wrcp_data, (size_t)WRCP_PACKET_SIZE);
-		modem->writeData(data, WRCP_PACKET_SIZE);
+		modem->writeData(data, 30);
 		std::cout << "Packet sent" << std::endl;
 	}
 }
