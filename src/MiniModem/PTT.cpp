@@ -14,7 +14,7 @@ void PTT::push() {
 
 void PTT::release() {
 	digitalWrite (GPIO_PIN, LOW);
-	delay(200);
+	delay(100);
 }
 
 #else
