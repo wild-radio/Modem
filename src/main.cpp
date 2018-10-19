@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include "ModemInterface.hpp"
 #include "ModemResolver.hpp"
 #include "WRCP/WRCPController.hpp"
@@ -6,14 +7,13 @@
 #include "test/FileModem.hpp"
 
 int main(int argc, char **argv) {
-	FileModem::setInFile("inf.txt");
-	FileModem::prepareNotify();
-	ModemResolver::setOverride(new FileModem);
+//	ModemResolver::setOverride(new FileModem);
 
 	ModemInterface *modem = ModemResolver::resolve();
-	WRCPController controller(0);
-	unsigned char data;
-	modem->readData(&data, 1);
+	if (argc > 3) {
+		modem->setOptions(argv[2]);
+	}
+	WRCPController controller(std::stoi(std::string(argv[1])));
 	//TestModem::txToRx();
 	//TestModem::insertIntoBuffer((unsigned char *) "WRCP12121212121", 15);
 

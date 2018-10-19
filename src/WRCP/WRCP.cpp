@@ -108,7 +108,7 @@ bool WRCP::isValidChecksum() {
 
 void WRCP::createNACK(WRCP packet_to_respond, int8_t sender_id) {
 	this->addProtocolIdentifier();
-
+	this->clearData();
 	this->packet.sender_id = sender_id;
 	this->packet.receiver_id = packet_to_respond.packet.sender_id;
 	this->packet.message_number = this->getPacketNumber();
@@ -214,4 +214,11 @@ bool WRCP::operator==(WRCP &packet) const {
 	bool is_same_number = this->packet.message_number == packet.packet.message_number ;
 
 	return is_same_sender && is_same_number;
+}
+
+void WRCP::clearData() {
+	this->packet.data[0] = 0;
+	this->packet.data[1] = 0;
+	this->packet.data[2] = 0;
+	this->packet.data[3] = 0;
 }

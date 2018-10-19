@@ -89,6 +89,8 @@ private:
 	int8_t getCameraOptionsAction();
 
 	int8_t getRequestPhotoAction();
+
+	void clearData();
 };
 
 

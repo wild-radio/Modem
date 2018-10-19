@@ -22,8 +22,8 @@ void WRCPController::mainLoop() {
 	}
 
 	//this->sendAngleChange(1, 45, 45, 0);
-	this->sendCameraOptions(1, 5, WRCP_ACTIVATE_SENSOR, 0);
-	this->sendRequestPhoto(1, 0);
+//	this->sendCameraOptions(1, 5, WRCP_ACTIVATE_SENSOR, 0);
+//	this->sendRequestPhoto(1, 0);
 //	this->sendRequestSendingRights();
 //	this->sendPhoto(12315234, 0);
 
@@ -53,7 +53,7 @@ bool WRCPController::handleACKAndNACK(const WRCP &packet, int trys, int timeout)
 			break;
 		} catch (WRCPTimeoutException exception) {
 			success = false;
-			outcoming_packets.post(packet);
+			this->outcoming_packets.post(packet);
 		}
 	}
 
@@ -80,7 +80,7 @@ WRCP WRCPController::getReturn(float timeout) {
 	auto start = std::chrono::steady_clock::now();
 
 	while (true) {
-		if (incoming_packets.hasMessage())
+		if (this->incoming_packets.hasMessage())
 			break;
 
 		auto current = std::chrono::steady_clock::now();
@@ -89,7 +89,7 @@ WRCP WRCPController::getReturn(float timeout) {
 			throw WRCPTimeoutException(1, "Timeout!");
 	}
 
-	return incoming_packets.pull();
+	return this->incoming_packets.pull();
 }
 
 void WRCPController::processPacket(WRCP packet) {
@@ -123,36 +123,36 @@ void WRCPController::processPacket(WRCP packet) {
 	}
 
 	if (packet.isInformPresenceAction()) {
-		std::cout << "Someone is informing their presence to us!" << std::endl;
+		std::cout << (int)packet.getSender() << " is informing their presence to us!" << std::endl;
 		this->other_ids[packet.getSender()] = true;
 		this->sendACK(packet);
 	}
 
 	if (packet.isRequestSendingRights()) {
 		this->id_with_transmission_rights = packet.getSender();
-		std::cout << packet.getSender() << " has the right to comunicate with us!" << std::endl;
+		std::cout << (int)packet.getSender() << " has the right to comunicate with us!" << std::endl;
 		this->sendACK(packet);
 	}
 
 	if (packet.isAngleChange()) {
 		std::cout <<  "Master requested an angle change in the horizontal of "
-		          << packet.getHorizontalAngle() << " degrees and in the vertical of "
-		          << packet.getVerticalAngle() << " degres for the camera "
-		          << packet.getCameraId() << std::endl;
+		          << (int)packet.getHorizontalAngle() << " degrees and in the vertical of "
+		          << (int)packet.getVerticalAngle() << " degres for the camera "
+		          << (int)packet.getCameraId() << std::endl;
 		this->sendACK(packet);
 	}
 
 	if (packet.isCameraOptions()) {
 		std::cout <<  "Master requested an camera options change, timer for capture of "
-		          << packet.getTimerForCapture() << " and use sensor is "
-		          << packet.getUseSensor() << " for the camera "
-		          << packet.getCameraId() << std::endl;
+		          << (int)packet.getTimerForCapture() << " and use sensor is "
+		          << (int)packet.getUseSensor() << " for the camera "
+		          << (int)packet.getCameraId() << std::endl;
 		this->sendACK(packet);
 	}
 
 	if (packet.isRequestPhoto()) {
 		//TODO: Get photo.
-		std::cout << "Mater requested a photo from the camera " << packet.getCameraId() << std::endl;
+		std::cout << "Mater requested a photo from the camera " << (int)packet.getCameraId() << std::endl;
 		this->sendPhoto(123124, packet.getCameraId());
 	}
 
@@ -178,7 +178,7 @@ void WRCPController::sendInformPresence() {
 	presence_packet.createSlaveInformPresence(this->id);
 	this->outcoming_packets.post(presence_packet);
 
-	bool success = handleACKAndNACK(presence_packet, 3, 2);
+	bool success = handleACKAndNACK(presence_packet, 10, 2);
 	if (!success) {
 		std::cout << "Presence timeout!" << std::endl;
 		return;
