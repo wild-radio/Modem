@@ -1,4 +1,6 @@
 #include <iostream>
+#include <strings.h>
+#include <cstring>
 #include "WRCPTransmitter.hpp"
 #include "../ModemInterface.hpp"
 #include "../ModemResolver.hpp"
@@ -12,7 +14,11 @@ void WRCPTransmitter::run() {
 		//TODO: Maybe add a delay time here.
 
 		WRCP packet = this->outcoming_packets->pull();
-		modem->writeData(packet.getData(), WRCP_PACKET_SIZE);
+		unsigned char data[30];
+		bzero(data, 30);
+		unsigned char *wrcp_data = packet.getData();
+		memcpy(data + 13, wrcp_data, (size_t)WRCP_PACKET_SIZE);
+		modem->writeData(data, WRCP_PACKET_SIZE);
 		std::cout << "Packet sent" << std::endl;
 	}
 }
