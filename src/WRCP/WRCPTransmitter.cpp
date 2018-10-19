@@ -13,5 +13,6 @@ void WRCPTransmitter::run() {
 
 		WRCP packet = this->outcoming_packets->pull();
 		modem->writeData(packet.getData(), WRCP_PACKET_SIZE);
+		std::cout << "Packet sent" << std::endl;
 	}
 }
