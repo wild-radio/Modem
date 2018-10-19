@@ -11,8 +11,8 @@ public:
 	MiniModem() {
 		this->read_stream = nullptr;
 	}
-	void write(const char *data, int size) override;
-	int read(char *data, int size) override;
+	void writeData(const unsigned char *data, int size) override;
+	int readData(unsigned char *data, int size) override;
 
 	void setOptions(std::string options) override {
 		this->alsa_option = options;

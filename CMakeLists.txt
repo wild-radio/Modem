@@ -3,5 +3,28 @@ project(Modem)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(Modem src/main.cpp src/ModemInterface.hpp src/MiniModem/MiniModem.cpp src/MiniModem/MiniModem.hpp src/MiniModem/StreamException.hpp src/Exception.hpp src/ModemResolver.cpp src/ModemResolver.hpp src/MiniModem/PTT.cpp src/MiniModem/PTT.hpp src/WRCP/WRCP.cpp src/WRCP/WRCP.hpp src/WRCP/WRCPController.cpp src/WRCP/WRCPController.hpp src/WRCP/WRCPReceiver.cpp src/WRCP/WRCPReceiver.hpp src/ThreadInterface.hpp src/WRCP/WRCPTransmitter.cpp src/WRCP/WRCPTransmitter.hpp)
+add_executable(
+        Modem src/main.cpp
+        src/ModemInterface.hpp
+        src/MiniModem/MiniModem.cpp
+        src/MiniModem/MiniModem.hpp
+        src/MiniModem/StreamException.hpp
+        src/Exception.hpp
+        src/ModemResolver.cpp
+        src/ModemResolver.hpp
+        src/MiniModem/PTT.cpp
+        src/MiniModem/PTT.hpp
+        src/WRCP/WRCP.cpp
+        src/WRCP/WRCP.hpp
+        src/WRCP/WRCPController.cpp
+        src/WRCP/WRCPController.hpp
+        src/WRCP/WRCPReceiver.cpp
+        src/WRCP/WRCPReceiver.hpp
+        src/ThreadInterface.hpp
+        src/WRCP/WRCPTransmitter.cpp
+        src/WRCP/WRCPTransmitter.hpp
+        src/MessageQueue/MessageQueue.hpp
+        src/test/TestModem.cpp
+        src/test/TestModem.hpp
+        src/WRCP/WRCPTimeoutException.hpp src/WRCP/WRCPPermissionException.hpp src/test/FileModem.cpp src/test/FileModem.hpp)
 target_link_libraries(Modem wiringPi pthread)

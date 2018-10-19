@@ -5,8 +5,8 @@
 
 class ModemInterface {
 public:
-	virtual void write(const char *data, int size) = 0;
-	virtual int read(char *data, int size) = 0;
+	virtual void writeData(const unsigned char *data, int size) = 0;
+	virtual int readData(unsigned char *data, int size) = 0;
 	virtual void setOptions(std::string options) = 0;
 };
 

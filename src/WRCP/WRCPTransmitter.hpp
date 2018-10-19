@@ -3,10 +3,18 @@
 
 
 #include "../ThreadInterface.hpp"
+#include "WRCP.hpp"
+#include "../MessageQueue/MessageQueue.hpp"
 
 class WRCPTransmitter : public ThreadInterface {
 public:
-	void run();
+	explicit WRCPTransmitter(MessageQueue<WRCP> *outcoming_packets) {
+		this->outcoming_packets = outcoming_packets;
+	}
+	void run() override;
+
+private:
+	MessageQueue<WRCP> *outcoming_packets;
 };
 
 

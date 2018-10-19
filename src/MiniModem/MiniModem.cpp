@@ -1,7 +1,7 @@
 #include "MiniModem.hpp"
 #include "StreamException.hpp"
 
-void MiniModem::write(const char *data, int size) {
+void MiniModem::writeData(const unsigned char *data, int size) {
 	std::string command = std::string(TX_COMMAND) + this->alsa_option;
 	std::FILE *stream = popen(command.c_str(), "w");
 
@@ -15,7 +15,7 @@ void MiniModem::write(const char *data, int size) {
 	this->ptt.release();
 }
 
-int MiniModem::read(char *data, int size) {
+int MiniModem::readData(unsigned char *data, int size) {
 	std::string command = std::string(RX_COMMAND) + this->alsa_option + " 2>/dev/null";
 
 	if (this->read_stream == nullptr) {

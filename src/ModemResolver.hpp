@@ -11,6 +11,7 @@
 class ModemResolver {
 public:
 	static ModemInterface *resolve();
+	static void setOverride(ModemInterface *instance);
 
 private:
 	static ModemInterface *instance;
