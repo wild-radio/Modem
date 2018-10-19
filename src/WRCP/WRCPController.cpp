@@ -184,7 +184,7 @@ void WRCPController::sendInformPresence() {
 	presence_packet.createSlaveInformPresence(this->id);
 	this->outcoming_packets.post(presence_packet);
 
-	bool success = handleACKAndNACK(presence_packet, 5, 5);
+	bool success = handleACKAndNACK(presence_packet, 5, 6);
 	if (!success) {
 		std::cout << "Presence timeout!" << std::endl;
 		return;
