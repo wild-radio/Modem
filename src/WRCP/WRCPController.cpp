@@ -53,6 +53,7 @@ bool WRCPController::handleACKAndNACK(const WRCP &packet, int trys, int timeout)
 			break;
 		} catch (WRCPTimeoutException exception) {
 			success = false;
+			std::cout << "Trying to send packet" << std::endl;
 			this->outcoming_packets.post(packet);
 		}
 	}
