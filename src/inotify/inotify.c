@@ -19,16 +19,133 @@
 #define BUF_LEN (MAX_EVENTS * (EVENT_SIZE + LEN_NAME))
 #define WATCH_ROOT_DIR "/home/pi/.wildradio/config"
 
+typedef struct camera_config
+{
+  int ativa;
+  int temporizador;
+  int presenca;
+  int horizontal;
+  int vertical;
+  int fotoConfirmacao;
+};
+
 void monitor(char *);
 int evnt_mon(char *);
 
+char* readFile(char *file_name) {
+  // Configuration file won't be larger than 20 chars
+  int max_buffer_length = 20;
+  char *source = malloc(max_buffer_length);
+
+  FILE *fp = fopen(file_name, "r");
+  if (fp == NULL) {
+    return;
+  }
+
+  size_t newLen = fread(source, sizeof(char), max_buffer_length, fp);
+  if (ferror(fp) != 0) {
+    return;
+  }
+
+  fclose(fp);
+
+  return source;
+}
+
+struct camera_config loadConfigFile(char *file_name) {
+  struct camera_config configuration;
+
+  char* file_content = readFile(file_name);
+
+  // First line of the file (0 or 1)
+  configuration.ativa = file_content[0] - '0';
+
+  // Second line of the file (0 or 1)
+  configuration.temporizador = file_content[2] - '0';
+
+  // Third line of the file (0 or 1)
+  configuration.presenca = file_content[4] - '0';
+
+  // Fourth line of the file (-60 to 60)
+  char row[3];
+  row[0] = file_content[6]; // -   or 0-9
+  row[1] = file_content[7]; // 0-9 or \n
+  row[2] = file_content[8]; // 0-9 or \n
+
+  int multiplier = row[0] == '-' ? -1 : 1;
+  char firstDigit = row[0] == '-' ? row[1] : row[0];
+  char secondDigit = row[0] == '-' ? row[2] : row[1];
+
+  int firstDigitInt = firstDigit - '0';
+  int secondDigitInt = secondDigit - '0';
+  if (secondDigit != '\n') {
+    firstDigitInt *= 10;
+  } else {
+    secondDigitInt = 0;
+  }
+
+  configuration.horizontal = multiplier * (firstDigitInt + secondDigitInt);
+
+  // Fifth line of the file (-60 to 60)
+  int cursor = 10;
+  if (row[1] == '\n') {
+    cursor = 8;
+  } else if (row[2] == '\n') {
+    cursor = 9;
+  }
+
+  row[0] = file_content[cursor];     // -   or 0-9
+  row[1] = file_content[cursor + 1]; // 0-9 or \n
+  row[2] = file_content[cursor + 2]; // 0-9 or \n
+
+  multiplier = row[0] == '-' ? -1 : 1;
+  firstDigit = row[0] == '-' ? row[1] : row[0];
+  secondDigit = row[0] == '-' ? row[2] : row[1];
+
+  firstDigitInt = firstDigit - '0';
+  secondDigitInt = secondDigit - '0';
+  if (secondDigit != '\n') {
+    firstDigitInt *= 10;
+  } else {
+    secondDigitInt = 0;
+  }
+
+  configuration.vertical = multiplier * (firstDigitInt + secondDigitInt);
+
+  // Sixth line of the file (0 or 1)
+  if (row[1] == '\n') {
+    cursor = cursor + 2;
+  } else if (row[2] == '\n') {
+    cursor = cursor + 3;
+  } else {
+    cursor = cursor + 4;
+  }
+
+  configuration.fotoConfirmacao = file_content[cursor] - '0';
+
+  return configuration;
+}
+
+void printConfig(struct camera_config c) {
+  printf("Ativa: %d\n", c.ativa);
+  printf("Temporizador: %d\n", c.temporizador);
+  printf("Presenca: %d\n", c.presenca);
+  printf("Horizontal: %d\n", c.horizontal);
+  printf("Vertical: %d\n", c.vertical);
+  printf("Foto confirmacao: %d\n", c.fotoConfirmacao);
+}
+
 void main() {
+  // Configuration parsing is a WIP
+  // struct camera_config configuration = loadConfigFile("/home/pi/.wildradio/config/WR0001/principal");
+  // printConfig(configuration);
+
   // Watch the root directory on a new process
   if (fork() == 0) {
     evnt_mon(WATCH_ROOT_DIR);
   }
 
-  // Recursively watch subdirectories 
+  // Recursively watch subdirectories
   monitor(WATCH_ROOT_DIR);
 
   while (1);
