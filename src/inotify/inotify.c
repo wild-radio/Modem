@@ -1,6 +1,7 @@
 //
 // Created by Renato Böhler on 23/10/18.
 //
+// To compile: gcc inotify.c -lrt
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -10,6 +11,9 @@
 #include <sys/stat.h>
 #include <dirent.h>
 #include <time.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -18,6 +22,8 @@
 #define EVENT_SIZE (sizeof(struct inotify_event))
 #define BUF_LEN (MAX_EVENTS * (EVENT_SIZE + LEN_NAME))
 #define WATCH_ROOT_DIR "/home/pi/.wildradio/config"
+#define PRINCIPAL 1
+#define ALTERNATIVA 0
 
 typedef struct camera_config
 {
@@ -31,6 +37,29 @@ typedef struct camera_config
 
 void monitor(char *);
 int evnt_mon(char *);
+
+int *debouncing;
+
+void debounceDiffConfigs(struct camera_config old, struct camera_config new) {
+  int local_debouncing = ++(*debouncing);
+  if (fork() == 0) {
+    sleep(2);
+    if (local_debouncing == *debouncing) {
+      *debouncing = 0;
+      diffConfigs(old, new);
+    }
+    exit(0);
+  }
+}
+
+void diffConfigs(struct camera_config old, struct camera_config new) {
+  printf("\n\nLast configuration:\n\n");
+  printConfig(old);
+  printf("\n\n---\n\nNew configuration:\n\n");
+  printConfig(new);
+
+  old = new;
+}
 
 char* readFile(char *file_name) {
   // Configuration file won't be larger than 20 chars
@@ -136,9 +165,11 @@ void printConfig(struct camera_config c) {
 }
 
 void main() {
-  // Configuration parsing is a WIP
-  // struct camera_config configuration = loadConfigFile("/home/pi/.wildradio/config/WR0001/principal");
-  // printConfig(configuration);
+  // Shared memory to perform function call debouncing
+  char *shm_name = "/debounce.diff.configs";
+  int fd = shm_open(shm_name, O_RDWR | O_CREAT, 0644);
+  ftruncate(fd, sizeof(int));
+  debouncing = (int *) mmap(NULL, sizeof(int), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
 
   // Watch the root directory on a new process
   if (fork() == 0) {
@@ -206,6 +237,19 @@ void monitor(char *rt_dir) {
 }
 
 int evnt_mon(char *argv) {
+  // Initial file contents
+  struct camera_config last_configurations[2];
+
+  char main_camera_path[100] = "";
+  strcat(main_camera_path, argv);
+  strcat(main_camera_path, "/principal");
+  last_configurations[PRINCIPAL] = loadConfigFile(main_camera_path);
+
+  char alternative_camera_path[100] = "";
+  strcat(alternative_camera_path, argv);
+  strcat(alternative_camera_path, "/alternativa");
+  last_configurations[ALTERNATIVA] = loadConfigFile(alternative_camera_path); 
+
   // Setup
   int length, i = 0, wd;
   int fd;
@@ -251,7 +295,16 @@ int evnt_mon(char *argv) {
         }
 
         if (event->mask & IN_MODIFY && !(event->mask & IN_ISDIR)) {
-          printf("File modified: %s/%s\n", argv, event->name);
+          char full_path[100] = "";
+          strcat(full_path, argv);
+          strcat(full_path, "/");
+          strcat(full_path, event->name);
+          printf("File modified: %s\n", full_path);
+
+          int camera_type = full_path[strlen(full_path) - 1] == 'l' ? PRINCIPAL : ALTERNATIVA;
+          struct camera_config new_configuration = loadConfigFile(full_path);
+
+          debounceDiffConfigs(last_configurations[camera_type], new_configuration);
         }
 
         i += EVENT_SIZE + event->len;
