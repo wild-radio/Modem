@@ -22,6 +22,8 @@
 #define EVENT_SIZE (sizeof(struct inotify_event))
 #define BUF_LEN (MAX_EVENTS * (EVENT_SIZE + LEN_NAME))
 #define WATCH_ROOT_DIR "/home/pi/.wildradio/config"
+#define MAX_FILE_PATH_LENGTH 100
+#define MAX_CONFIG_FILE_LENGTH 20
 #define PRINCIPAL 1
 #define ALTERNATIVA 0
 
@@ -40,38 +42,15 @@ int evnt_mon(char *);
 
 int *debouncing;
 
-void debounceDiffConfigs(struct camera_config old, struct camera_config new) {
-  int local_debouncing = ++(*debouncing);
-  if (fork() == 0) {
-    sleep(2);
-    if (local_debouncing == *debouncing) {
-      *debouncing = 0;
-      diffConfigs(old, new);
-    }
-    exit(0);
-  }
-}
-
-void diffConfigs(struct camera_config old, struct camera_config new) {
-  printf("\n\nLast configuration:\n\n");
-  printConfig(old);
-  printf("\n\n---\n\nNew configuration:\n\n");
-  printConfig(new);
-
-  old = new;
-}
-
 char* readFile(char *file_name) {
-  // Configuration file won't be larger than 20 chars
-  int max_buffer_length = 20;
-  char *source = malloc(max_buffer_length);
+  char *source = malloc(MAX_CONFIG_FILE_LENGTH);
 
   FILE *fp = fopen(file_name, "r");
   if (fp == NULL) {
     return;
   }
 
-  size_t newLen = fread(source, sizeof(char), max_buffer_length, fp);
+  size_t newLen = fread(source, sizeof(char), MAX_CONFIG_FILE_LENGTH, fp);
   if (ferror(fp) != 0) {
     return;
   }
@@ -79,6 +58,110 @@ char* readFile(char *file_name) {
   fclose(fp);
 
   return source;
+}
+
+char* getSharedMemoryName(char *full_path) {
+  char path[MAX_FILE_PATH_LENGTH];
+  strcpy(path, full_path);
+
+  char *shm_name = strstr(path, "/config/");
+  shm_name += strlen("/config");
+
+  int i;
+  for(i = strlen(shm_name) - 1; i--; i > 0) {
+    if (shm_name[i] == '/') {
+      shm_name[i] = '.';
+      break;
+    }
+  }
+
+  return shm_name;
+}
+
+void storeConfig(char *full_path, struct camera_config new) {
+
+  char *shm_name = getSharedMemoryName(full_path);
+
+  int fd = shm_open(shm_name, O_RDWR | O_CREAT, 0644);
+  ftruncate(fd, sizeof(struct camera_config));
+  struct camera_config *old = (struct camera_config *) mmap(NULL, sizeof(struct camera_config), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+
+  old->ativa = new.ativa;
+  old->temporizador = new.temporizador;
+  old->presenca = new.presenca;
+  old->horizontal = new.horizontal;
+  old->vertical = new.vertical;
+  old->fotoConfirmacao = new.fotoConfirmacao;
+}
+
+struct camera_config getConfig(char *full_path) {
+  char *shm_name = getSharedMemoryName(full_path);
+
+  int fd = shm_open(shm_name, O_RDWR | O_CREAT, 0644);
+  ftruncate(fd, sizeof(struct camera_config));
+  struct camera_config *shm_config = (struct camera_config *) mmap(NULL, sizeof(struct camera_config), PROT_READ|PROT_WRITE, MAP_SHARED, fd, 0);
+
+  struct camera_config config;
+
+  config.ativa = shm_config->ativa;
+  config.temporizador = shm_config->temporizador;
+  config.presenca = shm_config->presenca;
+  config.horizontal = shm_config->horizontal;
+  config.vertical = shm_config->vertical;
+  config.fotoConfirmacao = shm_config->fotoConfirmacao;
+
+  return config;
+}
+
+void debounceDiffConfigs(struct camera_config new, char* full_path) {
+  int local_debouncing = ++(*debouncing);
+
+  if (fork() == 0) {
+    sleep(2);
+    if (local_debouncing == *debouncing) {
+      *debouncing = 0;
+      diffConfigs(new, full_path);
+    }
+    exit(0);
+  }
+}
+
+void diffConfigs(struct camera_config new, char* full_path) {
+  struct camera_config old = getConfig(full_path);
+  
+  if (old.ativa != new.ativa) {
+    if (new.ativa) {
+      printf("%s\tCâmera ativada\n", full_path);
+    } else {
+      printf("%s\tCâmera desativada\n", full_path);
+    }
+  }
+
+  if (old.temporizador != new.temporizador) {
+    if (new.temporizador) {
+      printf("%s\tTemporizador ativado\n", full_path);
+   } else {
+     printf("%s\tTemporizador desativado\n", full_path);
+   }
+  }
+
+  if (old.presenca != new.presenca) {
+    if (new.presenca) {
+      printf("%s\tPresenca ativada\n", full_path);
+   } else {
+     printf("%s\tPresenca desativada\n", full_path);
+   }
+  }
+
+  if (old.horizontal != new.horizontal || old.vertical != new.vertical) {
+    printf("%s\tAngulo alterado para (%d, %d)\n", full_path, new.horizontal, new.vertical);
+  }
+
+  if (new.fotoConfirmacao) {
+    printf("%s\tFoto de confirmacao requisitada\n", full_path);
+  }
+
+  storeConfig(full_path, new);
 }
 
 struct camera_config loadConfigFile(char *file_name) {
@@ -240,15 +323,15 @@ int evnt_mon(char *argv) {
   // Initial file contents
   struct camera_config last_configurations[2];
 
-  char main_camera_path[100] = "";
+  char main_camera_path[MAX_FILE_PATH_LENGTH] = "";
   strcat(main_camera_path, argv);
   strcat(main_camera_path, "/principal");
-  last_configurations[PRINCIPAL] = loadConfigFile(main_camera_path);
+  storeConfig(main_camera_path, loadConfigFile(main_camera_path));
 
-  char alternative_camera_path[100] = "";
+  char alternative_camera_path[MAX_FILE_PATH_LENGTH] = "";
   strcat(alternative_camera_path, argv);
   strcat(alternative_camera_path, "/alternativa");
-  last_configurations[ALTERNATIVA] = loadConfigFile(alternative_camera_path); 
+  storeConfig(alternative_camera_path, loadConfigFile(alternative_camera_path));
 
   // Setup
   int length, i = 0, wd;
@@ -285,7 +368,7 @@ int evnt_mon(char *argv) {
           if (event->mask & IN_ISDIR) {
             // New directory, watch it aswell
             if (fork() == 0) {
-              char p[100] = " ";
+              char p[MAX_FILE_PATH_LENGTH] = " ";
               strcpy(p, argv);
               strcat(p, "/");
               strcat(p, event->name);
@@ -295,16 +378,15 @@ int evnt_mon(char *argv) {
         }
 
         if (event->mask & IN_MODIFY && !(event->mask & IN_ISDIR)) {
-          char full_path[100] = "";
+          char full_path[MAX_FILE_PATH_LENGTH] = "";
           strcat(full_path, argv);
           strcat(full_path, "/");
           strcat(full_path, event->name);
-          printf("File modified: %s\n", full_path);
 
           int camera_type = full_path[strlen(full_path) - 1] == 'l' ? PRINCIPAL : ALTERNATIVA;
           struct camera_config new_configuration = loadConfigFile(full_path);
 
-          debounceDiffConfigs(last_configurations[camera_type], new_configuration);
+          debounceDiffConfigs(new_configuration, full_path);
         }
 
         i += EVENT_SIZE + event->len;
