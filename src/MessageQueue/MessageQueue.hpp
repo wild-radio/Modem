@@ -39,7 +39,7 @@ void MessageQueue<T>::post(T msg) {
 template<class T>
 bool MessageQueue<T>::hasMessage() {
 	this->m_mutex.lock();
-	bool has_message =  !this->m_queue.empty();
+	bool has_message = !this->m_queue.empty();
 	this->m_mutex.unlock();
 
 	return has_message;

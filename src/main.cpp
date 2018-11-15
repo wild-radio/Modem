@@ -5,6 +5,7 @@
 #include "WRCP/WRCPController.hpp"
 #include "test/TestModem.hpp"
 #include "test/FileModem.hpp"
+#include "Notification/EventMonitor.hpp"
 
 int main(int argc, char **argv) {
 //	ModemResolver::setOverride(new FileModem);
@@ -14,8 +15,10 @@ int main(int argc, char **argv) {
 	//TestModem::txToRx();
 	//TestModem::insertIntoBuffer((unsigned char *) "WRCP12121212121", 15);
 
+
 	controller.startReceiver();
 	controller.startTransmitter();
+	controller.startNotifications();
 	controller.mainLoop();
 
 }

@@ -5,6 +5,7 @@
 #include <thread>
 #include "../MessageQueue/MessageQueue.hpp"
 #include "WRCP.hpp"
+#include "../Notification/Notification.hpp"
 
 class WRCPController {
 public:
@@ -20,15 +21,20 @@ public:
 
 	void startReceiver();
 	void startTransmitter();
+	void startNotifications();
 	void mainLoop();
 
 private:
+	int fd;
 	int8_t id;
 	int8_t id_with_transmission_rights;
 	bool request_photo;
 	bool other_ids[255];
 	MessageQueue<WRCP> incoming_packets;
 	MessageQueue<WRCP> outcoming_packets;
+	MessageQueue<Notification> incoming_notifications;
+	std::thread *principal_monitor_thread;
+	std::thread *secondary_monitor_thread;
 	std::thread *receiver_thread;
 	std::thread *transmitter_thread;
 
@@ -51,6 +57,19 @@ private:
 	void sendCameraOptions(int8_t receiver_id, int8_t timer_for_capture, int8_t use_sensor, int8_t camera_id);
 
 	void sendRequestPhoto(int8_t receiver_id, int8_t camera_id);
+
+
+	void handlePacket();
+
+	void handleNotifications();
+
+	void processNotification(Notification notification);
+
+	void handlePhotoReciever(WRCP &packet);
+
+	void sendPhotoToServer(WRCP &packet);
+
+	void convertPPMToPNG(std::string ppm_filename, std::string png_filename);
 };
 
 

@@ -68,7 +68,7 @@ void FileModem::handle_events(int fd) {
 	/* Some systems cannot read integer variables if they are not
 	 properly aligned. On other systems, incorrect alignment may
 	 decrease performance. Hence, the buffer used for reading from
-	 the inotify file descriptor should have the same alignment as
+	 the Notification file descriptor should have the same alignment as
 	 struct inotify_event. */
 
 	char buf[4096] __attribute__ ((aligned(__alignof__(struct inotify_event))));
@@ -77,7 +77,7 @@ void FileModem::handle_events(int fd) {
 	ssize_t len;
 	char *ptr;
 
-	/* Loop while events can be read from inotify file descriptor. */
+	/* Loop while events can be read from Notification file descriptor. */
 
 	for (;;) {
 

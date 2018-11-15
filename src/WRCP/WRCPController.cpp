@@ -4,7 +4,14 @@
 #include "WRCPTransmitter.hpp"
 #include "WRCPTimeoutException.hpp"
 #include "WRCPPermissionException.hpp"
-#include <chrono>
+#include "../SSTV/Robot36.hpp"
+#include "../SendPhotoToServer/SendPhotoToServer.hpp"
+#include "../Notification/EventMonitor.hpp"
+#include <sstream>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <zconf.h>
+#include <ctime>
 
 void WRCPController::startReceiver() {
 	auto receiver = new WRCPReceiver(&this->incoming_packets, &this->outcoming_packets);
@@ -16,25 +23,40 @@ void WRCPController::startTransmitter() {
 	this->transmitter_thread = new std::thread(&WRCPTransmitter::run, transmitter);
 }
 
+void WRCPController::startNotifications() {
+
+	auto monitor_principal = new EventMonitor("/home/clemente/.wildradio/config/WR001", "principal", &this->incoming_notifications, 0);
+	auto monitor_secondary = new EventMonitor("/home/clemente/.wildradio/config/WR001", "alternativa", &this->incoming_notifications, 1);
+	this->principal_monitor_thread = new std::thread(&EventMonitor::run, monitor_principal);
+	this->secondary_monitor_thread = new std::thread(&EventMonitor::run, monitor_secondary);
+}
+
 void WRCPController::mainLoop() {
 	if (this->isSlave()) {
+		//TODO Remove comentary
 		//this->sendInformPresence();
 	}
-
-	//this->sendAngleChange(1, 45, 45, 0);
-//	this->sendCameraOptions(1, 5, WRCP_ACTIVATE_SENSOR, 0);
-//	this->sendRequestPhoto(1, 0);
-//	this->sendRequestSendingRights();
-//	this->sendPhoto(12315234, 0);
-	this->sendAngleChange(1, 45, 45, 0);
+	WRCP packet;
+	packet.createPhoto(1, std::time(nullptr), 0);
+	this->sendPhotoToServer(packet);
 	while (true) {
-		if (!this->incoming_packets.hasMessage())
-			continue;
+		if (this->incoming_packets.hasMessage())
+			this->handlePacket();
 
-		WRCP packet = this->incoming_packets.pull();
-		this->processPacket(packet);
-
+		if (this->incoming_notifications.hasMessage()) {
+			this->handleNotifications();
+		}
 	}
+}
+
+void WRCPController::handlePacket() {
+	WRCP packet = incoming_packets.pull();
+	processPacket(packet);
+}
+
+void WRCPController::handleNotifications() {
+	Notification notification = this->incoming_notifications.pull();
+	processNotification(notification);
 }
 
 bool WRCPController::isSlave() {
@@ -110,12 +132,7 @@ void WRCPController::processPacket(WRCP packet) {
 	}
 
 	if (packet.isPhoto()) {
-		this->id_with_transmission_rights = 0;
-		this->request_photo = false;
-		std::cout << packet.getSender() << " will send a photo with the timestamp "
-		          << packet.getTimestamp() << " from the camera "
-		          << packet.getCameraId() << std::endl;
-		this->sendACK(packet);
+		handlePhotoReciever(packet);
 	}
 
 	if (this->request_photo) {
@@ -156,13 +173,35 @@ void WRCPController::processPacket(WRCP packet) {
 	}
 
 	if (packet.isRequestPhoto()) {
-		//TODO: Get photo.
 		std::cout << "Mater requested a photo from the camera " << (int)packet.getCameraId() << std::endl;
 		this->sendPhoto(123124, packet.getCameraId());
 		return;
 	}
 
 	std::cout << "Packet received with an invalid action!" << std::endl;
+}
+
+void WRCPController::handlePhotoReciever(WRCP &packet) {
+	id_with_transmission_rights = 0;
+	request_photo = false;
+	std::cout << packet.getSender() << " will send a photo with the timestamp "
+	          << packet.getTimestamp() << " from the camera "
+	          << packet.getCameraId() << std::endl;
+	sendACK(packet);
+
+	sendPhotoToServer(packet);
+}
+
+void WRCPController::sendPhotoToServer(WRCP &packet) {
+	auto decoder =  new Robot36Decoder();
+	auto sender = new SendPhotoToServer();
+	auto ppm_filename = "temp_photo.ppm";
+	//decoder->decoder(filename);
+	auto png_filename = "temp_photo.png";
+	this->convertPPMToPNG(ppm_filename, png_filename);
+
+	auto suffix = (request_photo) ? "configuracao/confirmacao/foto" : "fotos";
+	sender->sendPhoto(png_filename, id, packet.getCameraId(), packet.getTimestamp(), suffix);
 }
 
 void WRCPController::sendACK(WRCP packet) {
@@ -196,7 +235,7 @@ void WRCPController::sendInformPresence() {
 void WRCPController::sendRequestSendingRights() {
 	WRCP request_packet;
 	request_packet.createRequestSendingRights(this->id);
-	
+
 	this->outcoming_packets.post(request_packet);
 
 	bool success = handleACKAndNACK(request_packet, 5, -1);
@@ -212,15 +251,23 @@ void WRCPController::sendPhoto(int32_t timestamp, int8_t camera_id) {
 	WRCP photo_packet;
 	photo_packet.createPhoto(this->id, timestamp, camera_id);
 
-	this->outcoming_packets.post(photo_packet);
+	//this->outcoming_packets.post(photo_packet);
 
-	bool success = handleACKAndNACK(photo_packet, 3, 2);
+	//bool success = handleACKAndNACK(photo_packet, 3, 2);
+	auto success = true;
 	if (!success) {
 		std::cout << "Failed trying to transmit photo info!" << std::endl;
 		return;
 	}
 
 	std::cout << "Transmitted photo info!" << std::endl;
+
+	std::stringstream filename;
+	filename << "CAM" << (int)camera_id << "." << timestamp << ".ppm";
+	Robot36 sstv;
+	sstv.encode(filename.str());
+
+	std::cout << "Image transmitted!" << std::endl;
 }
 
 void WRCPController::sendAngleChange(int8_t receiver_id, int8_t angle_h, int8_t angle_v, int8_t camera_id) {
@@ -277,5 +324,24 @@ void WRCPController::sendRequestPhoto(int8_t receiver_id, int8_t camera_id) {
 	std::cout << "Photo requested!" << std::endl;
 	this->request_photo = true;
 	this->id_with_transmission_rights = receiver_id;
+}
+
+void WRCPController::processNotification(Notification notification) {
+	if (notification.type == NotificationType::MODIFY_OPTIONS) {
+		this->sendCameraOptions(!id, notification.timer, notification.sensor, notification.camera_id);
+		return;
+	}
+
+	if (notification.type == NotificationType::NEW_ANGLE) {
+		this->sendAngleChange(!id, notification.angle_h, notification.angle_v, notification.camera_id);
+	}
+
+	if (notification.type == NotificationType::REQUEST_CAPTURE) {
+		this->sendRequestPhoto(!id, notification.camera_id);
+	}
+}
+
+void WRCPController::convertPPMToPNG(std::string ppm_filename, std::string png_filename) {
+	std::system(std::string(std::string("magick ") + ppm_filename + std::string(" ") + png_filename).c_str());
 }
 
