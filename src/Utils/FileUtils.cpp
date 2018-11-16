@@ -5,14 +5,14 @@
 #include "../SendPhotoToServer/SendPhotoToServer.hpp"
 #include "FileUtils.hpp"
 
-std::stringstream FileUtils::getFileContents(const std::string &filename) {
+std::string FileUtils::getFileContents(const std::string &filename) {
 	std::ifstream file (filename, std::ios_base::binary);
 	checkFileOpened(filename, file);
 
 	auto file_contents = readFile(file);
 
 	file.close();
-	return file_contents;
+	return file_contents.str();
 }
 
 std::vector<std::string> FileUtils::getFileLines(const std::string &filename) {

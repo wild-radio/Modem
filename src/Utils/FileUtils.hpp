@@ -11,7 +11,7 @@
 
 class FileUtils {
 public:
-	static std::stringstream getFileContents(const std::string &filename);
+	static std::string getFileContents(const std::string &filename);
 	static std::vector<std::string> getFileLines(const std::string &filename);
 
 	static void saveFileContents(std::string filename, std::string contents);

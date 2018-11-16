@@ -22,13 +22,13 @@ void SendPhotoToServer::sendPhoto(std::string filename, int id, int cam_id, int 
 		return;
 	}
 
-	std::stringstream file_contents = FileUtils::getFileContents(filename);
+	auto file_contents = FileUtils::getFileContents(filename);
 
 	std::stringstream path;
 	std::stringstream body;
 	std::string camera_type = (cam_id == 0) ? "principal" : "alternativa";
 	path << POST_URL << "cameras/integracao/WR000" << id << "/" << camera_type << "/" << suffix;
-	auto string_contents = file_contents.str();
+	auto string_contents = file_contents;
 	body << "{\"dataHoraCaptura\": " << timestamp << ", \"conteudo\": \"" << base64_encode((const unsigned char*)string_contents.c_str(), string_contents.size()) <<"\"}";
 
 	CURL *hnd = curl_easy_init();
