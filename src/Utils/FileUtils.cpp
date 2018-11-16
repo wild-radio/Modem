@@ -27,7 +27,7 @@ std::vector<std::string> FileUtils::getFileLines(const std::string &filename) {
 
 void FileUtils::checkFileOpened(const std::string &filename, std::ifstream &file) {
 	if (!file.is_open()) {
-		perror(std::__cxx11::string("Error opening the file " + filename).c_str());
+		perror(std::string("Error opening the file " + filename).c_str());
 	}
 }
 
