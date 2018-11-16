@@ -6,7 +6,8 @@
 #include "WRCPPermissionException.hpp"
 #include "../SSTV/Robot36.hpp"
 #include "../SendPhotoToServer/SendPhotoToServer.hpp"
-#include "../Notification/EventMonitor.hpp"
+#include "../Notification/CameraConfigurationsEventMonitor.hpp"
+#include "../Notification/PhotosEventMonitor.hpp"
 #include <sstream>
 #include <sys/mman.h>
 #include <fcntl.h>
@@ -23,12 +24,40 @@ void WRCPController::startTransmitter() {
 	this->transmitter_thread = new std::thread(&WRCPTransmitter::run, transmitter);
 }
 
-void WRCPController::startNotifications() {
+void WRCPController::startMasterNotifications() {
+	auto monitor_main = new CameraConfigurationsEventMonitor(
+			"/home/clemente/.wildradio/config/WR001",
+			"principal",
+			&this->incoming_notifications,
+			MAIN_CAMERA_ID
+	);
+	auto monitor_secondary = new CameraConfigurationsEventMonitor(
+			"/home/clemente/.wildradio/config/WR001",
+			"alternativa",
+			&this->incoming_notifications,
+			SECONDARY_CAMERA_ID
+	);
+	this->main_monitor_thread = new std::thread(&CameraConfigurationsEventMonitor::run, monitor_main);
+	this->secondary_monitor_thread = new std::thread(&CameraConfigurationsEventMonitor::run, monitor_secondary);
+}
 
-	auto monitor_principal = new EventMonitor("/home/clemente/.wildradio/config/WR001", "principal", &this->incoming_notifications, 0);
-	auto monitor_secondary = new EventMonitor("/home/clemente/.wildradio/config/WR001", "alternativa", &this->incoming_notifications, 1);
-	this->principal_monitor_thread = new std::thread(&EventMonitor::run, monitor_principal);
-	this->secondary_monitor_thread = new std::thread(&EventMonitor::run, monitor_secondary);
+void WRCPController::startSlaveNotifications() {
+	this->main_config.loadConfigurations("/home/clemente/.wildradio/config/slave/principal");
+	this->secondary_config.loadConfigurations("/home/clemente/.wildradio/config/slave/alternativa");
+
+	auto monitor_main = new PhotosEventMonitor(
+			"/home/clemente/.wildradio/photos/main",
+			&this->incoming_notifications,
+			MAIN_CAMERA_ID
+	);
+	auto secondary_main = new PhotosEventMonitor(
+			"/home/clemente/.wildradio/photos/secondary",
+			&this->incoming_notifications,
+			SECONDARY_CAMERA_ID
+	);
+
+	this->main_photo_monitor_thread = new std::thread(&PhotosEventMonitor::run, monitor_main);
+	this->secondary_photo_monitor_thread = new std::thread(&PhotosEventMonitor::run, secondary_main);
 }
 
 void WRCPController::mainLoop() {
@@ -56,7 +85,7 @@ void WRCPController::handlePacket() {
 
 void WRCPController::handleNotifications() {
 	Notification notification = this->incoming_notifications.pull();
-	processNotification(notification);
+	processMasterNotification(notification);
 }
 
 bool WRCPController::isSlave() {
@@ -159,6 +188,7 @@ void WRCPController::processPacket(WRCP packet) {
 		          << (int)packet.getHorizontalAngle() << " degrees and in the vertical of "
 		          << (int)packet.getVerticalAngle() << " degres for the camera "
 		          << (int)packet.getCameraId() << std::endl;
+		this->updateAngle(packet);
 		this->sendACK(packet);
 		return;
 	}
@@ -168,12 +198,15 @@ void WRCPController::processPacket(WRCP packet) {
 		          << (int)packet.getTimerForCapture() << " and use sensor is "
 		          << (int)packet.getUseSensor() << " for the camera "
 		          << (int)packet.getCameraId() << std::endl;
+		this->updateOptions(packet);
 		this->sendACK(packet);
 		return;
 	}
 
 	if (packet.isRequestPhoto()) {
 		std::cout << "Mater requested a photo from the camera " << (int)packet.getCameraId() << std::endl;
+		this->requestPhoto(packet);
+		//TODO: Get photo
 		this->sendPhoto(123124, packet.getCameraId());
 		return;
 	}
@@ -251,10 +284,10 @@ void WRCPController::sendPhoto(int32_t timestamp, int8_t camera_id) {
 	WRCP photo_packet;
 	photo_packet.createPhoto(this->id, timestamp, camera_id);
 
-	//this->outcoming_packets.post(photo_packet);
+	this->outcoming_packets.post(photo_packet);
 
-	//bool success = handleACKAndNACK(photo_packet, 3, 2);
-	auto success = true;
+	bool success = handleACKAndNACK(photo_packet, 3, 2);
+
 	if (!success) {
 		std::cout << "Failed trying to transmit photo info!" << std::endl;
 		return;
@@ -263,7 +296,7 @@ void WRCPController::sendPhoto(int32_t timestamp, int8_t camera_id) {
 	std::cout << "Transmitted photo info!" << std::endl;
 
 	std::stringstream filename;
-	filename << "CAM" << (int)camera_id << "." << timestamp << ".ppm";
+	filename << timestamp << ".ppm";
 	Robot36 sstv;
 	sstv.encode(filename.str());
 
@@ -326,7 +359,7 @@ void WRCPController::sendRequestPhoto(int8_t receiver_id, int8_t camera_id) {
 	this->id_with_transmission_rights = receiver_id;
 }
 
-void WRCPController::processNotification(Notification notification) {
+void WRCPController::processMasterNotification(Notification notification) {
 	if (notification.type == NotificationType::MODIFY_OPTIONS) {
 		this->sendCameraOptions(!id, notification.timer, notification.sensor, notification.camera_id);
 		return;
@@ -339,9 +372,41 @@ void WRCPController::processNotification(Notification notification) {
 	if (notification.type == NotificationType::REQUEST_CAPTURE) {
 		this->sendRequestPhoto(!id, notification.camera_id);
 	}
+
+	if (notification.type == NotificationType::NEW_PHOTO) {
+		this->sendPhoto(notification.timestamp, notification.camera_id);
+	}
 }
 
 void WRCPController::convertPPMToPNG(std::string ppm_filename, std::string png_filename) {
 	std::system(std::string(std::string("magick ") + ppm_filename + std::string(" ") + png_filename).c_str());
+}
+
+void WRCPController::updateAngle(WRCP packet) {
+	auto *config = getConfigurations(packet.getCameraId());
+	config->vertical = packet.getVerticalAngle();
+	config->horizontal = packet.getHorizontalAngle();
+	config->request_photo = 0;
+	config->saveConfigurations();
+}
+
+void WRCPController::updateOptions(WRCP packet) {
+	auto *config = getConfigurations(packet.getCameraId());
+	config->sensor = packet.getUseSensor();
+	config->timer = packet.getTimerForCapture();
+	config->request_photo = 0;
+	config->saveConfigurations();
+}
+
+void WRCPController::requestPhoto(WRCP packet) {
+	auto *config = getConfigurations(packet.getCameraId());
+	config->request_photo = 1;
+	config->saveConfigurations();
+}
+
+CameraConfigurations *WRCPController::getConfigurations(int camera_id){
+	if (camera_id == MAIN_CAMERA_ID)
+		return &main_config;
+	return &secondary_config;
 }
 

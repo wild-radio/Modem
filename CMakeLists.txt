@@ -60,8 +60,8 @@ add_executable(
         src/SSTV/Robot36.hpp
         #src/Notification/Inotify.hpp
         #src/Notification/Inotify.cpp
-        src/Notification/EventMonitor.cpp
-        src/Notification/EventMonitor.hpp
+        src/Notification/CameraConfigurationsEventMonitor.cpp
+        src/Notification/CameraConfigurationsEventMonitor.hpp
         src/Notification/Notification.cpp
         src/Notification/Notification.hpp
         src/SendPhotoToServer/SendPhotoToServer.cpp
@@ -72,5 +72,5 @@ add_executable(
         src/Notification/CameraConfigurations.hpp
         src/Utils/FileUtils.cpp
         src/Utils/FileUtils.hpp
-)
+        src/Notification/PhotosEventMonitor.cpp src/Notification/PhotosEventMonitor.hpp)
 target_link_libraries(Modem wiringPi pthread m pulse-simple rt curl)

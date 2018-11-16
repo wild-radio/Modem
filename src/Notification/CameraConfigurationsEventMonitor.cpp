@@ -1,11 +1,11 @@
-#include "EventMonitor.hpp"
+#include "CameraConfigurationsEventMonitor.hpp"
 #include <sys/inotify.h>
 #include <string.h>
 #include <unistd.h>
 
 #define EVENT_SIZE (sizeof(struct inotify_event))
 
-EventMonitor::EventMonitor(std::string directory, std::string filename, MessageQueue<Notification> *notification_queue, int camera_id) {
+CameraConfigurationsEventMonitor::CameraConfigurationsEventMonitor(std::string directory, std::string filename, MessageQueue<Notification> *notification_queue, int camera_id) {
 	this->directory = directory;
 	this->filename = filename;
 	this->notification_queue = notification_queue;
@@ -21,15 +21,15 @@ EventMonitor::EventMonitor(std::string directory, std::string filename, MessageQ
 	wd = inotify_add_watch(fd, directory.c_str(), IN_CREATE | IN_MODIFY);
 
 	if (wd == -1) {
-		perror(std::string("Couldn't add watch to " + directory).c_str());
+		std::perror(std::string("Couldn't add watch to " + directory).c_str());
 	}
 }
 
-void EventMonitor::run() {
+void CameraConfigurationsEventMonitor::run() {
 	this->monitor();
 }
 
-void EventMonitor::monitor() {
+void CameraConfigurationsEventMonitor::monitor() {
 	int length;
 	char buffer[(1024 * ((sizeof(struct inotify_event)) + 16))];
 	while (1) {
@@ -43,12 +43,12 @@ void EventMonitor::monitor() {
 	}
 }
 
-EventMonitor::~EventMonitor() {
+CameraConfigurationsEventMonitor::~CameraConfigurationsEventMonitor() {
 	inotify_rm_watch(fd, wd);
 	close(fd);
 }
 
-void EventMonitor::processEvent(int length, const char *buffer) {
+void CameraConfigurationsEventMonitor::processEvent(int length, const char *buffer) {
 	int i = 0;
 	while (i < length) {
 		inotify_event *event = (struct inotify_event *)&buffer[i];
@@ -63,11 +63,11 @@ void EventMonitor::processEvent(int length, const char *buffer) {
 	}
 }
 
-bool EventMonitor::wasMyConfigModified(const inotify_event *event) const {
+bool CameraConfigurationsEventMonitor::wasMyConfigModified(const inotify_event *event) const {
 	return event->mask & IN_MODIFY && !(event->mask & IN_ISDIR) && filename == event->name;
 }
 
-void EventMonitor::generateNotification() {
+void CameraConfigurationsEventMonitor::generateNotification() {
 	auto new_config = new CameraConfigurations;
 	new_config->loadConfigurations(directory + "/" + filename);
 
@@ -86,11 +86,11 @@ void EventMonitor::generateNotification() {
 	this->config = new_config;
 }
 
-void EventMonitor::notifyPhotoRequested() const {
+void CameraConfigurationsEventMonitor::notifyPhotoRequested() const {
 	notification_queue->post(Notification(NotificationType::REQUEST_CAPTURE, camera_id));
 }
 
-void EventMonitor::notifyCamera(const CameraConfigurations *new_config) const {
+void CameraConfigurationsEventMonitor::notifyCamera(const CameraConfigurations *new_config) const {
 	if (new_config->active) {
 		notification_queue->post(Notification(NotificationType::ACTIVATE, camera_id));
 		return;
@@ -99,10 +99,10 @@ void EventMonitor::notifyCamera(const CameraConfigurations *new_config) const {
 	notification_queue->post(Notification(NotificationType::INACTIVATE, camera_id));
 }
 
-void EventMonitor::notifyAngleChanged(CameraConfigurations *new_config) const {
+void CameraConfigurationsEventMonitor::notifyAngleChanged(CameraConfigurations *new_config) const {
 	notification_queue->post(Notification(NotificationType::NEW_ANGLE, new_config->horizontal, new_config->vertical, camera_id));
 }
 
-void EventMonitor::notifyModifiedOptions(CameraConfigurations *new_config) {
+void CameraConfigurationsEventMonitor::notifyModifiedOptions(CameraConfigurations *new_config) {
 	notification_queue->post(Notification(NotificationType::MODIFY_OPTIONS, new_config->timer, new_config->sensor, camera_id));
 }

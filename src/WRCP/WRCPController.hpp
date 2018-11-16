@@ -2,10 +2,15 @@
 #define MODEM_WRCPCONTROLLER_HPP
 
 
+static const int MAIN_CAMERA_ID = 0;
+
+static const int SECONDARY_CAMERA_ID = 1;
+
 #include <thread>
 #include "../MessageQueue/MessageQueue.hpp"
 #include "WRCP.hpp"
 #include "../Notification/Notification.hpp"
+#include "../Notification/CameraConfigurations.hpp"
 
 class WRCPController {
 public:
@@ -21,7 +26,8 @@ public:
 
 	void startReceiver();
 	void startTransmitter();
-	void startNotifications();
+	void startMasterNotifications();
+	void startSlaveNotifications();
 	void mainLoop();
 
 private:
@@ -33,10 +39,15 @@ private:
 	MessageQueue<WRCP> incoming_packets;
 	MessageQueue<WRCP> outcoming_packets;
 	MessageQueue<Notification> incoming_notifications;
-	std::thread *principal_monitor_thread;
+	std::thread *main_monitor_thread;
 	std::thread *secondary_monitor_thread;
 	std::thread *receiver_thread;
 	std::thread *transmitter_thread;
+	std::thread *main_photo_monitor_thread;
+	std::thread *secondary_photo_monitor_thread;
+
+	CameraConfigurations main_config;
+	CameraConfigurations secondary_config;
 
 	bool isSlave();
 
@@ -53,23 +64,22 @@ private:
 	void sendRequestSendingRights();
 	void sendPhoto(int32_t timestamp, int8_t camera_id);
 	void sendAngleChange(int8_t receiver_id, int8_t angle_h, int8_t angle_v, int8_t camera_id);
-
 	void sendCameraOptions(int8_t receiver_id, int8_t timer_for_capture, int8_t use_sensor, int8_t camera_id);
-
 	void sendRequestPhoto(int8_t receiver_id, int8_t camera_id);
 
 
 	void handlePacket();
-
 	void handleNotifications();
-
-	void processNotification(Notification notification);
-
+	void processMasterNotification(Notification notification);
 	void handlePhotoReciever(WRCP &packet);
-
 	void sendPhotoToServer(WRCP &packet);
-
 	void convertPPMToPNG(std::string ppm_filename, std::string png_filename);
+	void updateAngle(WRCP packet);
+	CameraConfigurations *getConfigurations(int camera_id);
+
+	void updateOptions(WRCP packet);
+
+	void requestPhoto(WRCP packet);
 };
 
 

@@ -52,3 +52,10 @@ std::vector<std::string> FileUtils::readFileLines(std::ifstream &file) {
 
 	return lines;
 }
+
+void FileUtils::saveFileContents(std::string filename, std::string contents) {
+	std::ofstream file;
+	file.open(filename);
+	file << contents;
+	file.close();
+}

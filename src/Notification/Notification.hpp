@@ -6,7 +6,8 @@ enum NotificationType{
 	ACTIVATE,
 	INACTIVATE,
 	MODIFY_OPTIONS,
-	REQUEST_CAPTURE
+	REQUEST_CAPTURE,
+	NEW_PHOTO
 };
 
 class Notification {
@@ -16,6 +17,7 @@ public:
 	int angle_v;
 	bool timer;
 	bool sensor;
+	int timestamp;
 	int camera_id;
 
 	Notification(NotificationType type, int angle_h, int angle_v, int camera_id) : type(type), angle_h(angle_h), angle_v(angle_v), camera_id(camera_id){}
@@ -23,6 +25,9 @@ public:
 	Notification(NotificationType type, bool timer, bool sensor, int camera_id) : type(type), timer(timer),
 	                                                                              sensor(sensor),
 	                                                                              camera_id(camera_id) {}
+
+	Notification(NotificationType type, int timestamp, int camera_id) : type(type), timestamp(timestamp),
+	                                                                    camera_id(camera_id) {}
 };
 
 

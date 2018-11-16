@@ -13,7 +13,9 @@ public:
 	int request_photo;
 
 	void loadConfigurations(std::string filename);
+	void saveConfigurations();
 private:
+	std::string filename;
 };
 
 

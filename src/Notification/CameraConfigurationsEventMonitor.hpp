@@ -11,10 +11,10 @@
 #include <iostream>
 #include <sys/inotify.h>
 
-class EventMonitor : public ThreadInterface {
+class CameraConfigurationsEventMonitor : public ThreadInterface {
 public:
-	EventMonitor(std::string directory, std::string filename, MessageQueue<Notification> *notification_queue, int camera_id);
-	~EventMonitor();
+	CameraConfigurationsEventMonitor(std::string directory, std::string filename, MessageQueue<Notification> *notification_queue, int camera_id);
+	~CameraConfigurationsEventMonitor();
 	void run() override;
 
 private:
