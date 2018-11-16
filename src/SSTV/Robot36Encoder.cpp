@@ -3,6 +3,7 @@
 #include "limits.h"
 #include "utils.hpp"
 #include "yuv.hpp"
+#include "../MiniModem/PTT.hpp"
 
 
 void Robot36Encoder::encode(std::string image_filename, std::string source) {
@@ -165,4 +166,11 @@ void Robot36Encoder::u_scan(int y) {
 		uint8_t B = srgb(flerpf(B0, B1, xf - (float)x0));
 		add_freq(1500.0 + 800.0 * U_RGB(R, G, B) / 255.0);
 	}
+}
+
+void Robot36Encoder::transmit(std::string image_filename, std::string source) {
+	auto ptt = new PTT();
+	ptt->push();
+	this->encode(image_filename, source);
+	ptt->release();
 }

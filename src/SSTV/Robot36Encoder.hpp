@@ -8,7 +8,7 @@
 
 class Robot36Encoder {
 public:
-
+	void transmit(std::string image_filename, std::string source = "default");
 	void encode(std::string image_filename, std::string source = "default");
 private:
 	struct pcm *pcm;
