@@ -17,7 +17,7 @@ public:
 	static void saveFileContents(std::string filename, std::string contents);
 
 private:
-	static std::stringstream readFile(std::ifstream &file);
+	static std::string readFile(std::ifstream &file);
 	static std::vector<std::string> readFileLines(std::ifstream &file);
 
 	static void checkFileOpened(const std::string &filename, std::ifstream &file);

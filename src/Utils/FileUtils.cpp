@@ -12,7 +12,7 @@ std::string FileUtils::getFileContents(const std::string &filename) {
 	auto file_contents = readFile(file);
 
 	file.close();
-	return file_contents.str();
+	return file_contents;
 }
 
 std::vector<std::string> FileUtils::getFileLines(const std::string &filename) {
@@ -31,7 +31,7 @@ void FileUtils::checkFileOpened(const std::string &filename, std::ifstream &file
 	}
 }
 
-std::stringstream FileUtils::readFile(std::ifstream &file) {
+std::string FileUtils::readFile(std::ifstream &file) {
 	std::stringstream file_contents;
 	char buffer;
 
@@ -39,7 +39,7 @@ std::stringstream FileUtils::readFile(std::ifstream &file) {
 		file_contents << buffer;
 	}
 
-	return file_contents;
+	return file_contents.str();
 }
 
 std::vector<std::string> FileUtils::readFileLines(std::ifstream &file) {
