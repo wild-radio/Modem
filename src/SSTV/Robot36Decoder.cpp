@@ -270,7 +270,7 @@ int Robot36Decoder::decode(int *reset, struct Image **img, std::string img_name,
 			close_img(*img);
 		if (!img_name.empty()) {
 			if (!open_img_write(img, img_name.c_str(), width, height))
-				exit(1);
+				perror("Error opening image");
 		} else {
 			if (!open_img_write(img, string_time("%F_%T.ppm"), width, height))
 				exit(1);
@@ -335,7 +335,7 @@ int Robot36Decoder::decode(int *reset, struct Image **img, std::string img_name,
 int Robot36Decoder::demodulate(float *cnt_freq, float *dat_freq, float *drate) {
 	if (!init) {
 		init = 1;
-		rate = rate_pcm(pcm);
+		rate = (float)rate_pcm(pcm);
 		channels = channels_pcm(pcm);
 
 		factor_L = 1;
