@@ -344,10 +344,10 @@ int Robot36Decoder::demodulate(float *cnt_freq, float *dat_freq, float *drate) {
 		// we want odd number of taps, 4 and 2 ms window length gives best results
 		int cnt_taps = 1 | (int)(rate * factor_L * 0.004);
 		int dat_taps = 1 | (int)(rate * factor_L * 0.002);
-		fprintf(stderr, "using %d and %d tap filter\n", cnt_taps, dat_taps);
+		std::cout << "using " << cnt_taps << " and " << dat_taps << " tap filter\n";
 		*drate = rate * (float)factor_L / (float)factor_M;
 		dstep = 1.0 / *drate;
-		fprintf(stderr, "using factor of %ld/%ld, working at %.2fhz\n", factor_L, factor_M, *drate);
+		std::cout << "using factor of " << factor_L << "/" << factor_M << ", working at " << *drate << "hz\n";
 		cnt_q = new std::complex<float>;
 		dat_q = new std::complex<float>;
 		// same factor to keep life simple and have accurate horizontal sync

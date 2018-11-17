@@ -13,8 +13,12 @@ int main(int argc, char **argv) {
 	ModemInterface *modem = ModemResolver::resolve();
 	WRCPController controller(std::stoi(std::string(argv[1])));
 
-//	auto encoder = new Robot36Encoder();
-//	encoder->transmit("smpte.ppm");
+	std::string cmd = argv[0];
+	if (cmd == "0") {
+		auto encoder = new Robot36Encoder();
+		encoder->transmit("smpte.ppm");
+		return 0;
+	}
 
 	auto decoder = new Robot36Decoder();
 	decoder->decoder("teste.ppn");
