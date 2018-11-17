@@ -12,7 +12,7 @@ struct Pulse{
 	struct pcm base;
 	pa_simple *s;
 	pa_sample_spec ss;
-	short buffer[RATE];
+	short buffer[RATE * 2];
 	int buffer_pointer;
 };
 
