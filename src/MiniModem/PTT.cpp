@@ -27,5 +27,7 @@ PTT::PTT() {}
 void PTT::push() {}
 void PTT::release() {}
 
+PTT::~PTT() {}
+
 #endif
 

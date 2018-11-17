@@ -7,6 +7,7 @@
 class PTT {
 public:
 	PTT();
+	~PTT();
 	void push();
 	void release();
 private:
