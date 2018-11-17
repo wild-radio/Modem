@@ -7,7 +7,7 @@
 #include <pulse/error.h>
 
 #define RATE 44100
-#define BUFFER_SIZE RATE * 10
+#define BUFFER_SIZE RATE * 38
 struct Pulse{
 	struct pcm base;
 	pa_simple *s;
