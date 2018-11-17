@@ -7,12 +7,12 @@
 #include <pulse/error.h>
 
 #define RATE 44100
-
+#define BUFFER_SIZE RATE * 10
 struct Pulse{
 	struct pcm base;
 	pa_simple *s;
 	pa_sample_spec ss;
-	short buffer[RATE * 2];
+	short buffer[BUFFER_SIZE];
 	int buffer_pointer;
 };
 

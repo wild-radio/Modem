@@ -40,7 +40,7 @@ int write_pulse(struct pcm *pcm, short *buff, int frames) {
 	pulse->buffer[pulse->buffer_pointer] = buff[0];
 	pulse->buffer_pointer++;
 
-	if (pulse->buffer_pointer == RATE * 2) {
+	if (pulse->buffer_pointer == BUFFER_SIZE) {
 		if (pa_simple_write(pulse->s, pulse->buffer, sizeof(short) * pulse->buffer_pointer, &error) < 0) {
 			std::cout << "Error writing to pulseaudio: " << strerror(error) << std::endl;
 			return 0;
