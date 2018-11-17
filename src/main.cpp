@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
 	ModemInterface *modem = ModemResolver::resolve();
 	WRCPController controller(std::stoi(std::string(argv[1])));
 
-	std::string cmd = argv[0];
+	std::string cmd = argv[1];
 	if (cmd == "0") {
 		auto encoder = new Robot36Encoder();
 		encoder->transmit("smpte.ppm");
