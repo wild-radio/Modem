@@ -37,15 +37,9 @@ int write_pulse(struct pcm *pcm, short *buff, int frames) {
 	int error;
 	Pulse *pulse = (Pulse*)pcm;
 
-	pulse->buffer[pulse->buffer_pointer] = buff[0];
-	pulse->buffer_pointer++;
-
-	if (pulse->buffer_pointer == BUFFER_SIZE) {
-		if (pa_simple_write(pulse->s, pulse->buffer, sizeof(short) * pulse->buffer_pointer, &error) < 0) {
-			std::cout << "Error writing to pulseaudio: " << strerror(error) << std::endl;
-			return 0;
-		}
-		pulse->buffer_pointer = 0;
+	if (pa_simple_write(pulse->s, buff, sizeof(short) * frames, &error) < 0) {
+		std::cout << "Error writing to pulseaudio: " << strerror(error) << std::endl;
+		return 0;
 	}
 
 	return 1;
@@ -67,8 +61,6 @@ int open_pulse_write(struct pcm **p, const char *name, int, int, float) {
 	pulse->base.channels = channels_pulse;
 	pulse->base.rw = write_pulse;
 
-	pulse->buffer_pointer = 0;
-
 	*p = (pcm*) &pulse->base;
 
 	return 1;
@@ -89,8 +81,6 @@ int open_pulse_read(struct pcm **p, const char *name) {
 	pulse->base.info = info_pulse;
 	pulse->base.channels = channels_pulse;
 	pulse->base.rw = read_pulse;
-
-	pulse->buffer_pointer = 0;
 
 	*p = (pcm*) &pulse->base;
 

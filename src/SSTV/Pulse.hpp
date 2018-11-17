@@ -12,8 +12,6 @@ struct Pulse{
 	struct pcm base;
 	pa_simple *s;
 	pa_sample_spec ss;
-	short buffer[BUFFER_SIZE];
-	int buffer_pointer;
 };
 
 int open_pulse_read(struct pcm **, const char *);

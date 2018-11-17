@@ -4,6 +4,7 @@
 #include <string>
 #include "pcm.hpp"
 #include "Image.hpp"
+#include "Pulse.hpp"
 #include <complex>
 
 class Robot36Encoder {
@@ -24,6 +25,8 @@ private:
 	double y_len;
 	double uv_len;
 	struct Image *img;
+	short buffer[BUFFER_SIZE];
+	int buffer_pointer;
 
 	//Constants
 	const double sync_porch_sec = 0.003l;
@@ -43,6 +46,8 @@ private:
 	void y_scan(int y);
 	void v_scan(int y);
 	void u_scan(int y);
+
+	void sendAudio();
 };
 
 

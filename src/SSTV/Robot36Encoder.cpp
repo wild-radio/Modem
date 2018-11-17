@@ -60,9 +60,10 @@ void Robot36Encoder::encode(std::string image_filename, std::string source) {
 		u_scan(y);
 	}
 
-	for (int i = 0; i < 41000; i++)
+	for (int i = 0; i < RATE; i++)
 		this->add_sample(0.0);
 
+	this->sendAudio();
 	close_pcm(pcm);
 	close_img(img);
 }
@@ -70,7 +71,8 @@ void Robot36Encoder::encode(std::string image_filename, std::string source) {
 int Robot36Encoder::add_sample(float val) {
 	for (int i = 0; i < channels; i++)
 		buff[i] = (float)SHRT_MAX * val;
-	return write_pcm(pcm, buff, 1);
+	buffer[buffer_pointer] = buff[0];
+	buffer_pointer++;
 }
 
 void Robot36Encoder::add_freq(float freq) {
@@ -169,8 +171,12 @@ void Robot36Encoder::u_scan(int y) {
 }
 
 void Robot36Encoder::transmit(std::string image_filename, std::string source) {
+	this->encode(image_filename, source);
+}
+
+void Robot36Encoder::sendAudio() {
 	auto ptt = new PTT();
 	ptt->push();
-	this->encode(image_filename, source);
+	write_pcm(pcm, buffer, buffer_pointer);
 	ptt->release();
 }
