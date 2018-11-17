@@ -89,9 +89,8 @@ int open_ppm_read(struct Image **p, const char *name) {
 	return 1;
 }
 
-int open_ppm_write(struct Image **p, const char *name, int width, int height)
-{
-	struct ppm *ppm = (struct ppm *)malloc(sizeof(struct ppm));
+int open_ppm_write(struct Image **p, const char *name, int width, int height) {
+	auto *ppm = new struct ppm;
 	ppm->base.close = close_ppm;
 	ppm->base.data = (void *)ppm;
 

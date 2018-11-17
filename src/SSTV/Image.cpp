@@ -17,14 +17,10 @@ void close_img(struct Image *img)
 
 int open_img_read(struct Image **p, const char *name)
 {
-	if (strstr(name, ".ppm") == (name + (strlen(name) - strlen(".ppm"))))
-		return open_ppm_read(p, name);
-	return 0;
+	return open_ppm_read(p, name);
 }
 
 int open_img_write(struct Image **p, const char *name, int width, int height)
 {
-	if (strstr(name, ".ppm") == (name + (strlen(name) - strlen(".ppm"))))
-		return open_ppm_write(p, name, width, height);
-	return 0;
+	return open_ppm_write(p, name, width, height);
 }
