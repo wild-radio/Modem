@@ -63,7 +63,7 @@ void WRCPController::startSlaveNotifications() {
 void WRCPController::mainLoop() {
 	if (this->isSlave()) {
 		//TODO Remove comentary
-		//this->sendInformPresence();
+		this->sendInformPresence();
 	}
 	WRCP packet;
 	packet.createPhoto(1, std::time(nullptr), 0);
@@ -135,10 +135,10 @@ WRCP WRCPController::getReturn(float timeout) {
 		if (this->incoming_packets.hasMessage())
 			break;
 
-		/*auto current = std::chrono::steady_clock::now();
+		auto current = std::chrono::steady_clock::now();
 		std::chrono::duration<float> diff = current - start;
 		if (diff.count() >= timeout)
-			throw WRCPTimeoutException(1, "Timeout!");*/
+			throw WRCPTimeoutException(1, "Timeout!");
 	}
 
 	return this->incoming_packets.pull();
