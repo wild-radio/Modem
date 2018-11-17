@@ -16,12 +16,12 @@ int main(int argc, char **argv) {
 	std::string cmd = argv[1];
 	if (cmd == "0") {
 		auto encoder = new Robot36Encoder();
-		encoder->transmit("smpte.ppm");
+		encoder->transmit("photo.ppm");
 		return 0;
 	}
 
 	auto decoder = new Robot36Decoder();
-	decoder->decoder("teste.ppn");
+	decoder->decoder("teste.ppm");
 
 	/*controller.startReceiver();
 	controller.startTransmitter();
