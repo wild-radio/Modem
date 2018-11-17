@@ -26,7 +26,6 @@ int main(int argc, char **argv) {
 	/*controller.startReceiver();
 	controller.startTransmitter();
 	controller.startMasterNotifications();*/
-	controller.startSlaveNotifications();
-	controller.mainLoop();
-
+	//controller.startSlaveNotifications();
+	//controller.mainLoop();
 }
