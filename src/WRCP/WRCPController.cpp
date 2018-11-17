@@ -65,9 +65,8 @@ void WRCPController::mainLoop() {
 		//TODO Remove comentary
 		this->sendInformPresence();
 	}
-	WRCP packet;
-	packet.createPhoto(1, std::time(nullptr), 0);
-	this->sendPhotoToServer(packet);
+	
+
 	while (true) {
 		if (this->incoming_packets.hasMessage())
 			this->handlePacket();
