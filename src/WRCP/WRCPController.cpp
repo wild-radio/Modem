@@ -63,7 +63,7 @@ void WRCPController::startSlaveNotifications() {
 void WRCPController::mainLoop() {
 	if (this->isSlave()) {
 		//TODO Remove comentary
-		this->sendInformPresence();
+		//this->sendInformPresence();
 	}
 
 
