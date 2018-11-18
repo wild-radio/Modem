@@ -66,11 +66,15 @@ void WRCPController::mainLoop() {
 		this->sendInformPresence();
 	}
 	this->id_with_transmission_rights = 0;
-
+	int last_recived_timestamp = 0;
 	while (true) {
-		if (this->incoming_packets.hasMessage())
+		if (this->incoming_packets.hasMessage()) {
+			last_recived_timestamp = this->getTimestamp();
 			this->handlePacket();
+		}
 		if (this->request_photo)
+			continue;
+		if (id != 0 &&  this->getTimestamp() - last_recived_timestamp < DEFAULT_TIMEOUT)
 			continue;
 		if (this->incoming_notifications.hasMessage()) {
 			this->handleNotifications();
@@ -208,12 +212,17 @@ void WRCPController::processPacket(WRCP packet) {
 		this->sendACK(packet);
 		sleep(3);
 		std::string photo_path = getPhotoPath(packet);
-		std::time_t timestamp = std::time(nullptr);
+		int timestamp = getTimestamp();
 		this->sendPhoto((int32_t)timestamp, packet.getCameraId(), photo_path);
 		return;
 	}
 
 	std::cout << "Packet received with an invalid action!" << std::endl;
+}
+
+int WRCPController::getTimestamp() const {
+	time_t timestamp = time(nullptr);
+	return (int)timestamp;
 }
 
 std::string WRCPController::getPhotoPath(WRCP &packet) const {
@@ -236,7 +245,7 @@ void WRCPController::handlePhotoReciever(WRCP &packet) {
 void WRCPController::sendPhotoToServer(WRCP &packet) {
 	std::string suffix = (request_photo) ? "configuracao/confirmacao/foto" : "fotos";
 	std::stringstream command;
-	command << "timeout 4m ./decoder36 " << (int)packet.getTimestamp() << " " << (int)packet.getCameraId() << " \"" << suffix << "\" &" << std::endl;
+	command << "timeout 5m ./decoder36 " << (int)packet.getTimestamp() << " " << (int)packet.getCameraId() << " \"" << suffix << "\" &" << std::endl;
 	std::cout << "Spawning decoder with the command" << command.str();
 	sleep(5);
 	std::system(command.str().c_str());

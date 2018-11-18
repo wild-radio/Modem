@@ -96,6 +96,8 @@ private:
 	std::string getPhotoPath(WRCP &packet) const;
 
 	std::string getPhotoPathFromTimestampAndCameraId(int32_t timestamp, int8_t camera_id);
+
+	int getTimestamp() const;
 };
 
 
