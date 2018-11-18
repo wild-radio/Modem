@@ -63,7 +63,7 @@ void WRCPController::startSlaveNotifications() {
 void WRCPController::mainLoop() {
 	if (this->isSlave()) {
 		//TODO Remove comentary
-		//this->sendInformPresence();
+		this->sendInformPresence();
 	}
 
 
@@ -112,7 +112,7 @@ bool WRCPController::handleACKAndNACK(const WRCP &packet, int trys, int timeout)
 }
 
 bool WRCPController::resendWhileNotAck(WRCP &r_packet, int r_timeout) {
-	for (int i = 0; i < 15; i++) {
+	for (int i = 0; i < 5; i++) {
 		r_packet = getReturn(r_timeout);
 
 		if (!r_packet.isValidChecksum())
