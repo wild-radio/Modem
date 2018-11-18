@@ -208,8 +208,8 @@ void WRCPController::processPacket(WRCP packet) {
 		this->sendACK(packet);
 		sleep(3);
 		std::string photo_path = getPhotoPath(packet);
-
-		this->sendPhoto(123124, packet.getCameraId(), std::__cxx11::string());
+		std::time_t timestamp = std::time(nullptr);
+		this->sendPhoto((int32_t)timestamp, packet.getCameraId(), photo_path);
 		return;
 	}
 
