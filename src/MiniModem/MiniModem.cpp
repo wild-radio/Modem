@@ -18,8 +18,8 @@ void MiniModem::writeData(const unsigned char *data, int size) {
 }
 
 int MiniModem::readData(unsigned char *data, int size) {
-	ControlRecordAccess::record_mutex.lock();
-	ControlRecordAccess::record_mutex.unlock();
+//	ControlRecordAccess::record_mutex.lock();
+//	ControlRecordAccess::record_mutex.unlock();
 
 	std::string command = std::string(RX_COMMAND) + this->alsa_option + " 2>/dev/null";
 
