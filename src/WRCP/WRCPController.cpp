@@ -312,7 +312,6 @@ void WRCPController::sendPhoto(int32_t timestamp, int8_t camera_id, std::string 
 
 	std::cout << photo_path << std::endl;
 
-	Robot36 sstv;
 	sstv.encode(photo_path);
 
 	std::cout << "Image transmitted!" << std::endl;

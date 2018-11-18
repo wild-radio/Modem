@@ -15,6 +15,7 @@ static const char *const secondary_photo_path = "/home/pi/.wildradio/pictures/se
 #include "WRCP.hpp"
 #include "../Notification/Notification.hpp"
 #include "../Notification/CameraConfigurations.hpp"
+#include "../SSTV/Robot36Encoder.hpp"
 
 class WRCPController {
 public:
@@ -49,6 +50,7 @@ private:
 	std::thread *transmitter_thread;
 	std::thread *main_photo_monitor_thread;
 	std::thread *secondary_photo_monitor_thread;
+	Robot36Encoder sstv;
 
 	CameraConfigurations main_config;
 	CameraConfigurations secondary_config;
