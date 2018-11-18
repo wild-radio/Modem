@@ -70,7 +70,8 @@ void WRCPController::mainLoop() {
 	while (true) {
 		if (this->incoming_packets.hasMessage())
 			this->handlePacket();
-
+		if (this->request_photo)
+			continue;
 		if (this->incoming_notifications.hasMessage()) {
 			this->handleNotifications();
 		}
