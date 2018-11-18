@@ -7,6 +7,7 @@
 
 
 void Robot36Encoder::encode(std::string image_filename, std::string source) {
+	buffer_pointer = 0;
 
 	open_img_read(&img, image_filename.c_str());
 
@@ -71,8 +72,6 @@ void Robot36Encoder::encode(std::string image_filename, std::string source) {
 int Robot36Encoder::add_sample(float val) {
 	for (int i = 0; i < channels; i++)
 		buff[i] = (float)SHRT_MAX * val;
-	if (buffer_pointer == BUFFER_SIZE)
-		std::cout << "ola\n";
 	buffer[buffer_pointer] = buff[0];
 	buffer_pointer++;
 }

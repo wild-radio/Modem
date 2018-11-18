@@ -22,7 +22,7 @@ void close_ppm(struct Image *img)
 {
 	struct ppm *ppm = (struct ppm *)(img->data);
 	munmap_file(ppm->p, ppm->size);
-	free(ppm);
+	delete ppm;
 }
 
 int open_ppm_read(struct Image **p, const char *name) {

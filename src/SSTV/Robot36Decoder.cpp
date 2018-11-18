@@ -13,8 +13,6 @@ void Robot36Decoder::decoder(std::string image_name, std::string source) {
 	if (!open_pcm_read(&pcm, source.c_str()))
 		return;
 
-	info_pcm(pcm);
-
 	float rate = rate_pcm(pcm);
 	int channels = channels_pcm(pcm);
 
