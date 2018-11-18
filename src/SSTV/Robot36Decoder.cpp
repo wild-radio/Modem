@@ -9,7 +9,7 @@
 #include "../ControlRecordAccess.hpp"
 
 void Robot36Decoder::decoder(std::string image_name, std::string source) {
-	ControlRecordAccess::record_mutex.lock();
+	//ControlRecordAccess::record_mutex.lock();
 	if (!open_pcm_read(&pcm, source.c_str()))
 		return;
 
@@ -63,7 +63,7 @@ void Robot36Decoder::decoder(std::string image_name, std::string source) {
 	if (img)
 		close_img(img);
 
-	ControlRecordAccess::record_mutex.unlock();
+	//ControlRecordAccess::record_mutex.unlock();
 	close_pcm(pcm);
 }
 
@@ -342,14 +342,14 @@ int Robot36Decoder::demodulate(float *cnt_freq, float *dat_freq, float *drate) {
 		rate = (float)rate_pcm(pcm);
 		channels = channels_pcm(pcm);
 
-		factor_L = 40000;
+		/*factor_L = 40000;
 		factor_M = 11 * rate;
 		int64_t factor_D = gcd(factor_L, factor_M);
 		factor_L /= factor_D;
-		factor_M /= factor_D;
-		/*
+		factor_M /= factor_D;*/
+
 		factor_L = 1;
-		factor_M = 1; */
+		factor_M = 1;
 
 		// we want odd number of taps, 4 and 2 ms window length gives best results
 		int cnt_taps = 1 | (int)(rate * factor_L * 0.004);

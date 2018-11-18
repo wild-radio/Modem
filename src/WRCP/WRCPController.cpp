@@ -235,13 +235,10 @@ void WRCPController::handlePhotoReciever(WRCP &packet) {
 }
 
 void WRCPController::sendPhotoToServer(WRCP &packet) {
-	std::string ppm_filename = "temp_photo.ppm";
-	sstv_decoder.decoder(ppm_filename);
-	std::string png_filename = "temp_photo.png";
-	this->convertPPMToPNG(ppm_filename, png_filename);
-
 	std::string suffix = (request_photo) ? "configuracao/confirmacao/foto" : "fotos";
-	sender.sendPhoto(png_filename, id, packet.getCameraId(), packet.getTimestamp(), suffix);
+	std::stringstream command;
+	command << packet.getTimestamp() << " " << packet.getCameraId() << " \"" << suffix << "\" &" << std::endl;
+	std::system(command.str().c_str());
 }
 
 void WRCPController::sendACK(WRCP packet) {
@@ -389,10 +386,6 @@ void WRCPController::processMasterNotification(Notification notification) {
 			this->sendPhoto(notification.timestamp, notification.camera_id, "");
 		}
 	}
-}
-
-void WRCPController::convertPPMToPNG(std::string ppm_filename, std::string png_filename) {
-	std::system(std::string(std::string("convert ") + ppm_filename + std::string(" ") + png_filename).c_str());
 }
 
 void WRCPController::updateAngle(WRCP packet) {
