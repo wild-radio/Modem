@@ -26,7 +26,7 @@ void close_ppm(struct Image *img)
 }
 
 int open_ppm_read(struct Image **p, const char *name) {
-	struct ppm *ppm = (struct ppm *)malloc(sizeof(struct ppm));
+	ppm *ppm = new struct ppm;
 	ppm->base.close = close_ppm;
 	ppm->base.data = (void *)ppm;
 

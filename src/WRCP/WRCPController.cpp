@@ -98,7 +98,7 @@ bool WRCPController::handleACKAndNACK(const WRCP &packet, int trys, int timeout)
 	int r_timeout = timeout;
 	for (int i = 0; i < trys; i++) {
 		if (timeout == -1)
-			r_timeout = rand() % 6 + 4;
+			r_timeout = rand() % 5 + 8;
 		try {
 			success = resendWhileNotAck(r_packet, r_timeout);
 			break;
@@ -235,12 +235,12 @@ void WRCPController::handlePhotoReciever(WRCP &packet) {
 }
 
 void WRCPController::sendPhotoToServer(WRCP &packet) {
-	auto ppm_filename = "temp_photo.ppm";
+	std::string ppm_filename = "temp_photo.ppm";
 	sstv_decoder.decoder(ppm_filename);
-	auto png_filename = "temp_photo.png";
+	std::string png_filename = "temp_photo.png";
 	this->convertPPMToPNG(ppm_filename, png_filename);
 
-	auto suffix = (request_photo) ? "configuracao/confirmacao/foto" : "fotos";
+	std::string suffix = (request_photo) ? "configuracao/confirmacao/foto" : "fotos";
 	sender.sendPhoto(png_filename, id, packet.getCameraId(), packet.getTimestamp(), suffix);
 }
 
