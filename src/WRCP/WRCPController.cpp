@@ -63,7 +63,7 @@ void WRCPController::startSlaveNotifications() {
 void WRCPController::mainLoop() {
 	if (this->isSlave()) {
 		//TODO Remove comentary
-		this->sendInformPresence();
+		//this->sendInformPresence();
 	}
 	this->id_with_transmission_rights = 0;
 	int last_recived_timestamp = 0;
@@ -74,7 +74,7 @@ void WRCPController::mainLoop() {
 		}
 		if (this->request_photo)
 			continue;
-		if (id != 0 &&  this->getTimestamp() - last_recived_timestamp < DEFAULT_TIMEOUT)
+		if (id != 0 &&  this->getTimestamp() - last_recived_timestamp < DEFAULT_TIMEOUT * 2)
 			continue;
 		if (this->incoming_notifications.hasMessage()) {
 			this->handleNotifications();
@@ -322,7 +322,6 @@ void WRCPController::sendPhoto(int32_t timestamp, int8_t camera_id, std::string 
 	sstv_encoder.encode(photo_path);
 
 	std::cout << "Image transmitted!" << std::endl;
-	sleep(10);
 }
 
 void WRCPController::sendAngleChange(int8_t receiver_id, int8_t angle_h, int8_t angle_v, int8_t camera_id) {
