@@ -26,13 +26,13 @@ void WRCPController::startTransmitter() {
 
 void WRCPController::startMasterNotifications() {
 	auto monitor_main = new CameraConfigurationsEventMonitor(
-			"/home/clemente/.wildradio/config/WR001",
+			"/home/pi/.wildradio/config/WR001",
 			"principal",
 			&this->incoming_notifications,
 			MAIN_CAMERA_ID
 	);
 	auto monitor_secondary = new CameraConfigurationsEventMonitor(
-			"/home/clemente/.wildradio/config/WR001",
+			"/home/pi/.wildradio/config/WR001",
 			"alternativa",
 			&this->incoming_notifications,
 			SECONDARY_CAMERA_ID
