@@ -257,7 +257,7 @@ void WRCPController::sendPhotoToServer(WRCP &packet) {
 	std::stringstream command;
 	command << "timeout 5m ./decoder36 " << (int)packet.getTimestamp() << " " << (int)packet.getCameraId() << " \"" << suffix << "\" &" << std::endl;
 	std::cout << "Spawning decoder with the command" << command.str();
-	sleep(6);
+	sleep(8);
 	std::system(command.str().c_str());
 	request_photo = false;
 	sleep(50);
