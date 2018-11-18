@@ -248,10 +248,10 @@ void WRCPController::sendPhotoToServer(WRCP &packet) {
 	std::stringstream command;
 	command << "timeout 5m ./decoder36 " << (int)packet.getTimestamp() << " " << (int)packet.getCameraId() << " \"" << suffix << "\" &" << std::endl;
 	std::cout << "Spawning decoder with the command" << command.str();
-	sleep(5);
+	sleep(6);
 	std::system(command.str().c_str());
 	request_photo = false;
-	sleep(65);
+	sleep(50);
 }
 
 void WRCPController::sendACK(WRCP packet) {
@@ -322,6 +322,7 @@ void WRCPController::sendPhoto(int32_t timestamp, int8_t camera_id, std::string 
 	sstv_encoder.encode(photo_path);
 
 	std::cout << "Image transmitted!" << std::endl;
+	sleep(10);
 }
 
 void WRCPController::sendAngleChange(int8_t receiver_id, int8_t angle_h, int8_t angle_v, int8_t camera_id) {
