@@ -66,4 +66,5 @@ void PhotosEventMonitor::generateNotification(inotify_event *event) {
 	auto timestamp_str = filename.substr(0, dot);
 	auto timestamp = std::stoi(timestamp_str);
 	notification_queue->post(Notification(NotificationType::NEW_PHOTO, timestamp, camera_id));
+	std::cout << "New photo detected with timestamp " << timestamp << " and camera id " << camera_id << std::endl;
 }

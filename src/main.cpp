@@ -9,12 +9,15 @@
 
 int main(int argc, char **argv) {
 
-	ModemInterface *modem = ModemResolver::resolve();
-	WRCPController controller(std::stoi(std::string(argv[1])));
+	auto id = std::stoi(std::string(argv[1]));
+	WRCPController controller(id);
 
 	controller.startReceiver();
 	controller.startTransmitter();
-	//controller.startMasterNotifications();
-	//controller.startSlaveNotifications();
+	if (id == 1) {
+		controller.startSlaveNotifications();
+		controller.mainLoop();
+	}
+	controller.startMasterNotifications();
 	controller.mainLoop();
 }

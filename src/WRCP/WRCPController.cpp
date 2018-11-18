@@ -42,16 +42,16 @@ void WRCPController::startMasterNotifications() {
 }
 
 void WRCPController::startSlaveNotifications() {
-	this->main_config.loadConfigurations("/home/clemente/.wildradio/config/slave/principal");
-	this->secondary_config.loadConfigurations("/home/clemente/.wildradio/config/slave/alternativa");
+	this->main_config.loadConfigurations("/home/pi/.wildradio/config/principal.txt");
+	this->secondary_config.loadConfigurations("/home/pi/.wildradio/config/alternativa.txt");
 
 	auto monitor_main = new PhotosEventMonitor(
-			"/home/clemente/.wildradio/photos/main",
+			main_photo_path,
 			&this->incoming_notifications,
 			MAIN_CAMERA_ID
 	);
 	auto secondary_main = new PhotosEventMonitor(
-			"/home/clemente/.wildradio/photos/secondary",
+			secondary_photo_path,
 			&this->incoming_notifications,
 			SECONDARY_CAMERA_ID
 	);
@@ -65,7 +65,7 @@ void WRCPController::mainLoop() {
 		//TODO Remove comentary
 		this->sendInformPresence();
 	}
-	
+
 
 	while (true) {
 		if (this->incoming_packets.hasMessage())
@@ -97,7 +97,7 @@ bool WRCPController::handleACKAndNACK(const WRCP &packet, int trys, int timeout)
 	int r_timeout = timeout;
 	for (int i = 0; i < trys; i++) {
 		if (timeout == -1)
-			r_timeout = rand() % 5 + 2;
+			r_timeout = rand() % 5 + 4;
 		try {
 			success = resendWhileNotAck(r_packet, r_timeout);
 			break;
@@ -203,14 +203,24 @@ void WRCPController::processPacket(WRCP packet) {
 	}
 
 	if (packet.isRequestPhoto()) {
-		std::cout << "Mater requested a photo from the camera " << (int)packet.getCameraId() << std::endl;
+		std::cout << "Master requested a photo from the camera " << (int)packet.getCameraId() << std::endl;
 		this->requestPhoto(packet);
-		//TODO: Get photo
-		this->sendPhoto(123124, packet.getCameraId());
+
+		sleep(3);
+		std::string photo_path = getPhotoPath(packet);
+
+		this->sendPhoto(123124, packet.getCameraId(), std::__cxx11::string());
 		return;
 	}
 
 	std::cout << "Packet received with an invalid action!" << std::endl;
+}
+
+std::string WRCPController::getPhotoPath(WRCP &packet) const {
+	std::__cxx11::string photo_path = (packet.getCameraId() == MAIN_CAMERA_ID) ?
+	                                  std::__cxx11::string(main_photo_path) + "/confirmation_cam_1.ppm" :
+	                                  std::__cxx11::string(secondary_photo_path) + "/confirmation_cam_2.ppm";
+	return photo_path;
 }
 
 void WRCPController::handlePhotoReciever(WRCP &packet) {
@@ -279,7 +289,7 @@ void WRCPController::sendRequestSendingRights() {
 	std::cout << "Got permission to comunicate!" << std::endl;
 }
 
-void WRCPController::sendPhoto(int32_t timestamp, int8_t camera_id) {
+void WRCPController::sendPhoto(int32_t timestamp, int8_t camera_id, std::string photo_path) {
 	WRCP photo_packet;
 	photo_packet.createPhoto(this->id, timestamp, camera_id);
 
@@ -294,10 +304,12 @@ void WRCPController::sendPhoto(int32_t timestamp, int8_t camera_id) {
 
 	std::cout << "Transmitted photo info!" << std::endl;
 
-	std::stringstream filename;
-	filename << timestamp << ".ppm";
+	if (photo_path.empty()) {
+		photo_path = this->getPhotoPathFromTimestampAndCameraId(timestamp, camera_id);
+	}
+
 	Robot36 sstv;
-	sstv.encode(filename.str());
+	sstv.encode(photo_path);
 
 	std::cout << "Image transmitted!" << std::endl;
 }
@@ -373,7 +385,7 @@ void WRCPController::processMasterNotification(Notification notification) {
 	}
 
 	if (notification.type == NotificationType::NEW_PHOTO) {
-		this->sendPhoto(notification.timestamp, notification.camera_id);
+		this->sendPhoto(notification.timestamp, notification.camera_id, "");
 	}
 }
 
@@ -407,5 +419,15 @@ CameraConfigurations *WRCPController::getConfigurations(int camera_id){
 	if (camera_id == MAIN_CAMERA_ID)
 		return &main_config;
 	return &secondary_config;
+}
+
+std::string WRCPController::getPhotoPathFromTimestampAndCameraId(int32_t timestamp, int8_t camera_id) {
+	std::stringstream timestamp_str;
+	timestamp_str << "/" << timestamp << ".ppm";
+	std::__cxx11::string photo_path = (camera_id == MAIN_CAMERA_ID) ?
+	                                  std::__cxx11::string(main_photo_path):
+	                                  std::__cxx11::string(secondary_photo_path);
+
+	return photo_path + timestamp_str.str();
 }
 

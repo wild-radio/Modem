@@ -6,6 +6,10 @@ static const int MAIN_CAMERA_ID = 0;
 
 static const int SECONDARY_CAMERA_ID = 1;
 
+static const char *const main_photo_path = "/home/pi/.wildradio/pictures/main";
+
+static const char *const secondary_photo_path = "/home/pi/.wildradio/pictures/secondary";
+
 #include <thread>
 #include "../MessageQueue/MessageQueue.hpp"
 #include "WRCP.hpp"
@@ -62,7 +66,7 @@ private:
 	void sendNACK(WRCP packet);
 	void sendInformPresence();
 	void sendRequestSendingRights();
-	void sendPhoto(int32_t timestamp, int8_t camera_id);
+	void sendPhoto(int32_t timestamp, int8_t camera_id, std::string photo_path = "");
 	void sendAngleChange(int8_t receiver_id, int8_t angle_h, int8_t angle_v, int8_t camera_id);
 	void sendCameraOptions(int8_t receiver_id, int8_t timer_for_capture, int8_t use_sensor, int8_t camera_id);
 	void sendRequestPhoto(int8_t receiver_id, int8_t camera_id);
@@ -80,6 +84,10 @@ private:
 	void updateOptions(WRCP packet);
 
 	void requestPhoto(WRCP packet);
+
+	std::string getPhotoPath(WRCP &packet) const;
+
+	std::string getPhotoPathFromTimestampAndCameraId(int32_t timestamp, int8_t camera_id);
 };
 
 
