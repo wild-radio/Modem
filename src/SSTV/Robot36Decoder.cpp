@@ -54,7 +54,10 @@ void Robot36Decoder::decoder(std::string image_name, std::string source) {
 		}
 
 		if (dat_mode) {
-			if (decode(&dat_reset, &img, image_name, cnt_freq, dat_freq, drate))
+			auto mode = decode(&dat_reset, &img, image_name, cnt_freq, dat_freq, drate);
+			if (mode == -1)
+				break;
+			if (mode == 1)
 				dat_mode = 0;
 		}
 	}
@@ -309,7 +312,7 @@ int Robot36Decoder::decode(int *reset, struct Image **img, std::string img_name,
 		if (y == height) {
 			close_img(*img);
 			*img = 0;
-			return 1;
+			return -1;
 		}
 		odd ^= 1;
 		ticks -= hor_len;
