@@ -250,14 +250,14 @@ void WRCPController::sendPhotoToServer(WRCP &packet) {
 void WRCPController::sendACK(WRCP packet) {
 	WRCP ack_packet;
 	ack_packet.createACK(packet);
-	sleep(2);
+	sleep(1);
 	this->outcoming_packets.post(ack_packet);
 }
 
 void WRCPController::sendNACK(WRCP packet) {
 	WRCP nack_packet;
 	nack_packet.createNACK(packet, this->id);
-
+	sleep(1);
 	this->outcoming_packets.post(nack_packet);
 }
 
@@ -361,7 +361,7 @@ void WRCPController::sendRequestPhoto(int8_t receiver_id, int8_t camera_id) {
 
 	this->outcoming_packets.post(request_photo_packet);
 
-	bool success = handleACKAndNACK(request_photo_packet, 3, DEFAULT_TIMEOUT);
+	bool success = handleACKAndNACK(request_photo_packet, 3, DEFAULT_TIMEOUT + 4);
 	if (!success) {
 		std::cout << "Failed requesting photo!" << std::endl;
 		return;
