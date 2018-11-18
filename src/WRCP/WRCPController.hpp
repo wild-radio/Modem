@@ -73,7 +73,7 @@ private:
 	void sendACK(WRCP packet);
 	void sendNACK(WRCP packet);
 	void sendInformPresence();
-	void sendRequestSendingRights();
+	bool sendRequestSendingRights();
 	void sendPhoto(int32_t timestamp, int8_t camera_id, std::string photo_path = "");
 	void sendAngleChange(int8_t receiver_id, int8_t angle_h, int8_t angle_v, int8_t camera_id);
 	void sendCameraOptions(int8_t receiver_id, int8_t timer_for_capture, int8_t use_sensor, int8_t camera_id);

@@ -98,7 +98,7 @@ bool WRCPController::handleACKAndNACK(const WRCP &packet, int trys, int timeout)
 	int r_timeout = timeout;
 	for (int i = 0; i < trys; i++) {
 		if (timeout == -1)
-			r_timeout = rand() % 5 + 4;
+			r_timeout = rand() % 6 + 4;
 		try {
 			success = resendWhileNotAck(r_packet, r_timeout);
 			break;
@@ -272,7 +272,7 @@ void WRCPController::sendInformPresence() {
 	std::cout << "Presence informed!" << std::endl;
 }
 
-void WRCPController::sendRequestSendingRights() {
+bool WRCPController::sendRequestSendingRights() {
 	WRCP request_packet;
 	request_packet.createRequestSendingRights(this->id);
 
@@ -281,10 +281,11 @@ void WRCPController::sendRequestSendingRights() {
 	bool success = handleACKAndNACK(request_packet, 5, -1);
 	if (!success) {
 		std::cout << "Failed requesting permission to comunicate!" << std::endl;
-		return;
+		return false;
 	}
 
 	std::cout << "Got permission to comunicate!" << std::endl;
+	return true;
 }
 
 void WRCPController::sendPhoto(int32_t timestamp, int8_t camera_id, std::string photo_path) {
@@ -384,7 +385,9 @@ void WRCPController::processMasterNotification(Notification notification) {
 	}
 
 	if (notification.type == NotificationType::NEW_PHOTO) {
-		this->sendPhoto(notification.timestamp, notification.camera_id, "");
+		if (this->sendRequestSendingRights() ) {
+			this->sendPhoto(notification.timestamp, notification.camera_id, "");
+		}
 	}
 }
 
