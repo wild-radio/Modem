@@ -93,6 +93,7 @@ bool WRCPController::isSlave() {
 
 bool WRCPController::handleACKAndNACK(const WRCP &packet, int trys, int timeout) {
 	WRCP r_packet;
+	return true;
 	bool success = false;
 	int r_timeout = timeout;
 	for (int i = 0; i < trys; i++) {
@@ -229,7 +230,7 @@ void WRCPController::handlePhotoReciever(WRCP &packet) {
 	std::cout << packet.getSender() << " will send a photo with the timestamp "
 	          << packet.getTimestamp() << " from the camera "
 	          << packet.getCameraId() << std::endl;
-	sendACK(packet);
+	//sendACK(packet);
 
 	sendPhotoToServer(packet);
 }
@@ -238,11 +239,12 @@ void WRCPController::sendPhotoToServer(WRCP &packet) {
 	auto decoder =  new Robot36Decoder();
 	auto sender = new SendPhotoToServer();
 	auto ppm_filename = "temp_photo.ppm";
-	//decoder->decoder(filename);
+	decoder->decoder(ppm_filename);
 	auto png_filename = "temp_photo.png";
 	this->convertPPMToPNG(ppm_filename, png_filename);
 
 	auto suffix = (request_photo) ? "configuracao/confirmacao/foto" : "fotos";
+	delete decoder;
 	sender->sendPhoto(png_filename, id, packet.getCameraId(), packet.getTimestamp(), suffix);
 }
 
