@@ -6,8 +6,10 @@
 #include "ddc.hpp"
 #include "Image.hpp"
 #include "yuv.hpp"
+#include "../ControlRecordAccess.hpp"
 
 void Robot36Decoder::decoder(std::string image_name, std::string source) {
+	ControlRecordAccess::record_mutex.lock();
 	if (!open_pcm_read(&pcm, source.c_str()))
 		return;
 
@@ -60,6 +62,7 @@ void Robot36Decoder::decoder(std::string image_name, std::string source) {
 	if (img)
 		close_img(img);
 
+	ControlRecordAccess::record_mutex.unlock();
 	close_pcm(pcm);
 }
 

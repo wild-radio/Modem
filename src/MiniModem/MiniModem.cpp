@@ -1,5 +1,7 @@
 #include "MiniModem.hpp"
 #include "StreamException.hpp"
+#include "../ControlRecordAccess.hpp"
+
 
 void MiniModem::writeData(const unsigned char *data, int size) {
 	std::string command = std::string(TX_COMMAND) + this->alsa_option;
@@ -16,6 +18,9 @@ void MiniModem::writeData(const unsigned char *data, int size) {
 }
 
 int MiniModem::readData(unsigned char *data, int size) {
+	ControlRecordAccess::record_mutex.lock();
+	ControlRecordAccess::record_mutex.unlock();
+
 	std::string command = std::string(RX_COMMAND) + this->alsa_option + " 2>/dev/null";
 
 	if (this->read_stream == nullptr) {

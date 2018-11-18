@@ -9,9 +9,6 @@
 
 int main(int argc, char **argv) {
 
-	Robot36Decoder decoder;
-	decoder.decoder("photo2.ppm");
-
 	auto id = std::stoi(std::string(argv[1]));
 	WRCPController controller(id);
 
