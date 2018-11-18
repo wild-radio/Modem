@@ -341,6 +341,8 @@ void WRCPController::sendCameraOptions(int8_t receiver_id, int8_t timer_for_capt
 
 	WRCP options_packet;
 	options_packet.createCameraOptions(receiver_id, timer_for_capture, use_sensor, camera_id);
+	std::cout << timer_for_capture << " " << use_sensor << std::endl;
+	std::cout << options_packet.getTimerForCapture() << " " << options_packet.getUseSensor() << std::endl;
 
 	this->outcoming_packets.post(options_packet);
 
