@@ -205,7 +205,7 @@ void WRCPController::processPacket(WRCP packet) {
 	if (packet.isRequestPhoto()) {
 		std::cout << "Master requested a photo from the camera " << (int)packet.getCameraId() << std::endl;
 		this->requestPhoto(packet);
-
+		this->sendACK(packet);
 		sleep(3);
 		std::string photo_path = getPhotoPath(packet);
 
@@ -361,11 +361,11 @@ void WRCPController::sendRequestPhoto(int8_t receiver_id, int8_t camera_id) {
 
 	this->outcoming_packets.post(request_photo_packet);
 
-	/*bool success = handleACKAndNACK(request_photo_packet, 3, DEFAULT_TIMEOUT + 4);
+	bool success = handleACKAndNACK(request_photo_packet, 3, DEFAULT_TIMEOUT + 4);
 	if (!success) {
 		std::cout << "Failed requesting photo!" << std::endl;
 		return;
-	}*/
+	}
 
 	std::cout << "Photo requested!" << std::endl;
 	this->request_photo = true;
