@@ -392,7 +392,7 @@ void WRCPController::processMasterNotification(Notification notification) {
 }
 
 void WRCPController::convertPPMToPNG(std::string ppm_filename, std::string png_filename) {
-	std::system(std::string(std::string("magick ") + ppm_filename + std::string(" ") + png_filename).c_str());
+	std::system(std::string(std::string("convert ") + ppm_filename + std::string(" ") + png_filename).c_str());
 }
 
 void WRCPController::updateAngle(WRCP packet) {
