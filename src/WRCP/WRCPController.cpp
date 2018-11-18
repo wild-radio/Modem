@@ -65,7 +65,7 @@ void WRCPController::mainLoop() {
 		//TODO Remove comentary
 		this->sendInformPresence();
 	}
-
+	this->id_with_transmission_rights = 0;
 
 	while (true) {
 		if (this->incoming_packets.hasMessage())
@@ -154,20 +154,6 @@ void WRCPController::processPacket(WRCP packet) {
 		std::cout << "Received packet for another person. Do nothing!" << std::endl;
 	}
 
-	if (this->id_with_transmission_rights !=0 && packet.getSender() != this->id_with_transmission_rights) {
-		this->incoming_packets.post(packet);
-		return;
-	}
-
-	if (packet.isPhoto()) {
-		handlePhotoReciever(packet);
-	}
-
-	if (this->request_photo) {
-		this->incoming_packets.post(packet);
-		return;
-	}
-
 	if (packet.isInformPresenceAction()) {
 		std::cout << (int)packet.getSender() << " is informing their presence to us!" << std::endl;
 		this->other_ids[packet.getSender()] = true;
@@ -181,6 +167,19 @@ void WRCPController::processPacket(WRCP packet) {
 		this->sendACK(packet);
 		return;
 	}
+
+	if (this->id == 0 && packet.getSender() != this->id_with_transmission_rights) {
+		//this->incoming_packets.post(packet);
+		return;
+	}
+
+	if (packet.isPhoto()) {
+		handlePhotoReciever(packet);
+		this->id_with_transmission_rights = 0;
+		return;
+	}
+
+
 
 	if (packet.isAngleChange()) {
 		std::cout <<  "Master requested an angle change in the horizontal of "
