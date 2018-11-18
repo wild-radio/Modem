@@ -392,7 +392,7 @@ int Robot36Decoder::demodulate(float *cnt_freq, float *dat_freq, float *drate) {
 		out = 0;
 		if (!read_pcm(pcm, pcm_buff, factor_M)) {
 			init = 0;
-			free(pcm_buff);
+			delete pcm_buff;
 			free_ddc(cnt_ddc);
 			free_ddc(dat_ddc);
 			free_buffer(buffer);

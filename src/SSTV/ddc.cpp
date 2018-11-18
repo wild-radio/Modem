@@ -61,7 +61,7 @@ ddc *alloc_ddc(int L, int M, float carrier, float bw, float rate, int taps, floa
 	for (int i = 0; i < L; i++)
 		for (int j = i, k = 0; j < taps; j += L, k++)
 			ddc->b[i * ddc->N + k] = b[j];
-	free(b);
+	delete b;
 	return ddc;
 }
 

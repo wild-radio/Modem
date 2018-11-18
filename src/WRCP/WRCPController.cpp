@@ -69,8 +69,8 @@ void WRCPController::mainLoop() {
 	int last_recived_timestamp = 0;
 	while (true) {
 		if (this->incoming_packets.hasMessage()) {
-			last_recived_timestamp = this->getTimestamp();
 			this->handlePacket();
+			last_recived_timestamp = this->getTimestamp();
 		}
 		if (this->request_photo)
 			continue;
@@ -78,6 +78,7 @@ void WRCPController::mainLoop() {
 			continue;
 		if (this->incoming_notifications.hasMessage()) {
 			this->handleNotifications();
+			last_recived_timestamp = this->getTimestamp();
 		}
 	}
 }

@@ -31,7 +31,7 @@ buffer *alloc_buffer(int samples) {
 }
 void free_buffer(struct buffer *buffer)
 {
-	free(buffer->s);
-	free(buffer);
+	delete buffer->s;
+	delete buffer;
 }
 

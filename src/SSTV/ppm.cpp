@@ -32,7 +32,7 @@ int open_ppm_read(struct Image **p, const char *name) {
 
 	if (!mmap_file_ro(&(ppm->p), name, &(ppm->size))) {
 		fprintf(stderr, "couldnt open Image file %s\n", name);
-		free(ppm);
+		delete ppm;
 		return 0;
 	}
 
@@ -41,7 +41,7 @@ int open_ppm_read(struct Image **p, const char *name) {
 	if (ppm->size < 10 || chr[index++] != 'P' || chr[index++] != '6') {
 		fprintf(stderr, "unsupported Image file\n");
 		munmap_file(ppm->p, ppm->size);
-		free(ppm);
+		delete ppm;
 		return 0;
 	}
 
@@ -66,7 +66,7 @@ int open_ppm_read(struct Image **p, const char *name) {
 		if (index >= ppm->size) {
 			fprintf(stderr, "broken Image file\n");
 			munmap_file(ppm->p, ppm->size);
-			free(ppm);
+			delete ppm;
 			return 0;
 		}
 		integer[n] = atoi(buff);
@@ -76,7 +76,7 @@ int open_ppm_read(struct Image **p, const char *name) {
 	if (0 == integer[0] || 0 == integer[1] || integer[2] != 255) {
 		fprintf(stderr, "unsupported Image file\n");
 		munmap_file(ppm->p, ppm->size);
-		free(ppm);
+		delete ppm;
 		return 0;
 	}
 	ppm->base.width = integer[0];
@@ -100,7 +100,7 @@ int open_ppm_write(struct Image **p, const char *name, int width, int height) {
 
 	if (!mmap_file_rw(&(ppm->p), name, ppm->size)) {
 		fprintf(stderr, "couldnt open Image file %s\n", name);
-		free(ppm);
+		delete ppm;
 		return 0;
 	}
 
