@@ -228,22 +228,21 @@ void WRCPController::handlePhotoReciever(WRCP &packet) {
 	std::cout << packet.getSender() << " will send a photo with the timestamp "
 	          << packet.getTimestamp() << " from the camera "
 	          << packet.getCameraId() << std::endl;
-	//sendACK(packet);
+	sendACK(packet);
 
 	sendPhotoToServer(packet);
 }
 
 void WRCPController::sendPhotoToServer(WRCP &packet) {
-	auto decoder =  new Robot36Decoder();
-	auto sender = new SendPhotoToServer();
+	Robot36Decoder decoder;
+	SendPhotoToServer sender;
 	auto ppm_filename = "temp_photo.ppm";
-	decoder->decoder(ppm_filename);
+	decoder.decoder(ppm_filename);
 	auto png_filename = "temp_photo.png";
 	this->convertPPMToPNG(ppm_filename, png_filename);
 
 	auto suffix = (request_photo) ? "configuracao/confirmacao/foto" : "fotos";
-	delete decoder;
-	sender->sendPhoto(png_filename, id, packet.getCameraId(), packet.getTimestamp(), suffix);
+	sender.sendPhoto(png_filename, id, packet.getCameraId(), packet.getTimestamp(), suffix);
 }
 
 void WRCPController::sendACK(WRCP packet) {
