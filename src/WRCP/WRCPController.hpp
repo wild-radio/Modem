@@ -18,6 +18,8 @@ static const int DEFAULT_TIMEOUT = 8;
 #include "../Notification/Notification.hpp"
 #include "../Notification/CameraConfigurations.hpp"
 #include "../SSTV/Robot36Encoder.hpp"
+#include "../SendPhotoToServer/SendPhotoToServer.hpp"
+#include "../SSTV/Robot36Decoder.hpp"
 
 class WRCPController {
 public:
@@ -52,7 +54,9 @@ private:
 	std::thread *transmitter_thread;
 	std::thread *main_photo_monitor_thread;
 	std::thread *secondary_photo_monitor_thread;
-	Robot36Encoder sstv;
+	Robot36Decoder sstv_decoder;
+	SendPhotoToServer sender;
+	Robot36Encoder sstv_encoder;
 
 	CameraConfigurations main_config;
 	CameraConfigurations secondary_config;

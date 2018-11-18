@@ -234,10 +234,8 @@ void WRCPController::handlePhotoReciever(WRCP &packet) {
 }
 
 void WRCPController::sendPhotoToServer(WRCP &packet) {
-	Robot36Decoder decoder;
-	SendPhotoToServer sender;
 	auto ppm_filename = "temp_photo.ppm";
-	decoder.decoder(ppm_filename);
+	sstv_decoder.decoder(ppm_filename);
 	auto png_filename = "temp_photo.png";
 	this->convertPPMToPNG(ppm_filename, png_filename);
 
@@ -309,7 +307,7 @@ void WRCPController::sendPhoto(int32_t timestamp, int8_t camera_id, std::string 
 
 	std::cout << photo_path << std::endl;
 
-	sstv.encode(photo_path);
+	sstv_encoder.encode(photo_path);
 
 	std::cout << "Image transmitted!" << std::endl;
 }
