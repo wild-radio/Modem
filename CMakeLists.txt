@@ -74,7 +74,7 @@ add_executable(
         src/Notification/PhotosEventMonitor.hpp
         src/ControlRecordAccess.cpp
         src/ControlRecordAccess.hpp
-)
+        src/WRCP/WRCPOtherPacketException.hpp)
 target_link_libraries(Modem wiringPi pthread m pulse-simple rt curl)
 
 project(decoder36)

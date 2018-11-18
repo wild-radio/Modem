@@ -8,6 +8,7 @@
 #include "../SendPhotoToServer/SendPhotoToServer.hpp"
 #include "../Notification/CameraConfigurationsEventMonitor.hpp"
 #include "../Notification/PhotosEventMonitor.hpp"
+#include "WRCPOtherPacketException.hpp"
 #include <sstream>
 #include <sys/mman.h>
 #include <fcntl.h>
@@ -111,6 +112,8 @@ bool WRCPController::handleACKAndNACK(const WRCP &packet, int trys, int timeout)
 			success = false;
 			std::cout << "Trying to resend packet" << std::endl;
 			this->outcoming_packets.post(packet);
+		} catch (WRCPOtherPacketException exception) {
+			return false;
 		}
 	}
 
@@ -124,13 +127,16 @@ bool WRCPController::resendWhileNotAck(WRCP &r_packet, int r_timeout) {
 		if (!r_packet.isValidChecksum())
 			continue;
 
-		if (!r_packet.isACK())
-			continue;
+		if (r_packet.isACK())
+			return true;
 
 		if (r_packet.isNACK())
 			return false;
 
-		return true;
+		if (id != 0 && r_packet.isForMe(id)) {
+			this->incoming_packets.post(r_packet);
+			throw WRCPOtherPacketException(1, "Should process packet");
+		}
 	}
 
 	return false;
