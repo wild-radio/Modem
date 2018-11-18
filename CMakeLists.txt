@@ -72,5 +72,5 @@ add_executable(
         src/Notification/CameraConfigurations.hpp
         src/Utils/FileUtils.cpp
         src/Utils/FileUtils.hpp
-        src/Notification/PhotosEventMonitor.cpp src/Notification/PhotosEventMonitor.hpp)
+        src/Notification/PhotosEventMonitor.cpp src/Notification/PhotosEventMonitor.hpp src/ControlRecordAccess.cpp src/ControlRecordAccess.hpp)
 target_link_libraries(Modem wiringPi pthread m pulse-simple rt curl)
