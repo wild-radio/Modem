@@ -25,7 +25,7 @@ void Robot36Encoder::encode(std::string image_filename, std::string source) {
 	seperator_len = rate * seperator_sec;
 
 
-	buff = (short *)malloc(sizeof(short)*channels);
+	buff = new short;
 
 	info_pcm(pcm);
 
