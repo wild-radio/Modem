@@ -225,7 +225,6 @@ std::string WRCPController::getPhotoPath(WRCP &packet) const {
 
 void WRCPController::handlePhotoReciever(WRCP &packet) {
 	id_with_transmission_rights = 0;
-	request_photo = false;
 	std::cout << packet.getSender() << " will send a photo with the timestamp "
 	          << packet.getTimestamp() << " from the camera "
 	          << packet.getCameraId() << std::endl;
@@ -237,10 +236,12 @@ void WRCPController::handlePhotoReciever(WRCP &packet) {
 void WRCPController::sendPhotoToServer(WRCP &packet) {
 	std::string suffix = (request_photo) ? "configuracao/confirmacao/foto" : "fotos";
 	std::stringstream command;
-	command << "timeout 2m ./decoder36 " << (int)packet.getTimestamp() << " " << (int)packet.getCameraId() << " \"" << suffix << "\" &" << std::endl;
+	command << "timeout 4m ./decoder36 " << (int)packet.getTimestamp() << " " << (int)packet.getCameraId() << " \"" << suffix << "\" &" << std::endl;
 	std::cout << "Spawning decoder with the command" << command.str();
+	sleep(5);
 	std::system(command.str().c_str());
-	sleep(60);
+	request_photo = false;
+	sleep(65);
 }
 
 void WRCPController::sendACK(WRCP packet) {
