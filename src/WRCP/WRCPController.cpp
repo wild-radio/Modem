@@ -93,7 +93,6 @@ bool WRCPController::isSlave() {
 
 bool WRCPController::handleACKAndNACK(const WRCP &packet, int trys, int timeout) {
 	WRCP r_packet;
-	return true;
 	bool success = false;
 	int r_timeout = timeout;
 	for (int i = 0; i < trys; i++) {
@@ -251,7 +250,7 @@ void WRCPController::sendPhotoToServer(WRCP &packet) {
 void WRCPController::sendACK(WRCP packet) {
 	WRCP ack_packet;
 	ack_packet.createACK(packet);
-
+	sleep(2);
 	this->outcoming_packets.post(ack_packet);
 }
 
