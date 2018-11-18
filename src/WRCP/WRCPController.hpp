@@ -10,6 +10,8 @@ static const char *const main_photo_path = "/home/pi/.wildradio/pictures/main";
 
 static const char *const secondary_photo_path = "/home/pi/.wildradio/pictures/secondary";
 
+static const int DEFAULT_TIMEOUT = 8;
+
 #include <thread>
 #include "../MessageQueue/MessageQueue.hpp"
 #include "WRCP.hpp"
