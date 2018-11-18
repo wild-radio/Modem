@@ -32,6 +32,7 @@ public:
 	bool isForMe(int8_t id);
 
 	bool isACK() { return  packet.action == this->getACKAction(); }
+	bool isNACK() { return  packet.action == this->getNACKAction(); }
 	bool isInformPresenceAction() { return packet.action == this->getInformPresenceAction(); }
 	bool isRequestSendingRights() { return packet.action == this->getRequestSendingRightsAction(); }
 	bool isPhoto() { return packet.action == this->getPhotoAction(); }

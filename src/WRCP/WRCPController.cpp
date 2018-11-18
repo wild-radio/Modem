@@ -127,6 +127,9 @@ bool WRCPController::resendWhileNotAck(WRCP &r_packet, int r_timeout) {
 		if (!r_packet.isACK())
 			continue;
 
+		if (r_packet.isNACK())
+			return false;
+
 		return true;
 	}
 
