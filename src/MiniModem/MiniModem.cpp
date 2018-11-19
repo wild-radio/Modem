@@ -21,9 +21,9 @@ int MiniModem::readData(unsigned char *data, int size) {
 //	ControlRecordAccess::record_mutex.lock();
 //	ControlRecordAccess::record_mutex.unlock();
 
-	std::string command = std::string(RX_COMMAND) + " 2>/dev/null";
 
 	if (this->read_stream == nullptr) {
+		std::string command = std::string(RX_COMMAND) + " 2>/dev/null";
 		this->read_stream = popen(command.c_str(), "r");
 	}
 
@@ -31,7 +31,7 @@ int MiniModem::readData(unsigned char *data, int size) {
 		throw StreamException(1, "Failed to open the stream!");
 	}
 
-	int read_size = (int) fread(data, sizeof(char), size, this->read_stream);
+	int read_size = (int) fread(data, sizeof(char), (size_t)size, this->read_stream);
 	return read_size;
 }
 

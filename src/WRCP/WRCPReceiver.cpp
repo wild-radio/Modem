@@ -8,8 +8,8 @@ void WRCPReceiver::run() {
 		ModemInterface *modem = ModemResolver::resolve();
 		unsigned char byte;
 		int len = modem->readData(&byte, 1);
-		/*if (len == 0)
-			continue;*/
+		if (len == 0)
+			continue;
 		if (byte == 'W') {
 			this->receiving = true;
 			this->clearBuffer();
