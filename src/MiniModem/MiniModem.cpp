@@ -4,7 +4,7 @@
 
 
 void MiniModem::writeData(const unsigned char *data, int size) {
-	std::string command = std::string(TX_COMMAND) + this->alsa_option;
+	std::string command = TX_COMMAND;
 	std::FILE *stream = popen(command.c_str(), "w");
 
 	if (stream == nullptr) {
@@ -18,20 +18,17 @@ void MiniModem::writeData(const unsigned char *data, int size) {
 }
 
 int MiniModem::readData(unsigned char *data, int size) {
-//	ControlRecordAccess::record_mutex.lock();
-//	ControlRecordAccess::record_mutex.unlock();
+	int read_size = (int) fread(data, sizeof(char), (size_t)size, this->read_stream);
+	return read_size;
+}
 
-
-	if (this->read_stream == nullptr) {
-		std::string command = std::string(RX_COMMAND) + " 2>/dev/null";
-		this->read_stream = popen(command.c_str(), "r");
+void MiniModem::openReadStream() {
+	if (read_stream == nullptr) {
+		read_stream = popen((RX_COMMAND + " 2>/dev/null").c_str(), "r");
 	}
 
 	if (this->read_stream == nullptr) {
 		throw StreamException(1, "Failed to open the stream!");
 	}
-
-	int read_size = (int) fread(data, sizeof(char), (size_t)size, this->read_stream);
-	return read_size;
 }
 

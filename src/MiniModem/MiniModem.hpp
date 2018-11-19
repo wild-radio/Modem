@@ -10,6 +10,7 @@ class MiniModem : public ModemInterface {
 public:
 	MiniModem() {
 		this->read_stream = nullptr;
+		openReadStream();
 	}
 	void writeData(const unsigned char *data, int size) override;
 	int readData(unsigned char *data, int size) override;
@@ -24,6 +25,8 @@ private:
 	std::string alsa_option;
 	std::string TX_COMMAND = "minimodem -R 44100 --tx 120 ";
 	std::string RX_COMMAND = "minimodem -R 44100 --rx 120 -c 1.5";
+
+	void openReadStream();
 };
 
 
