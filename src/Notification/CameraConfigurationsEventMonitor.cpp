@@ -105,6 +105,5 @@ void CameraConfigurationsEventMonitor::notifyAngleChanged(CameraConfigurations *
 }
 
 void CameraConfigurationsEventMonitor::notifyModifiedOptions(CameraConfigurations *new_config) {
-	std::cout << new_config->timer << " " << new_config->sensor << std::endl;
 	notification_queue->post(Notification(NotificationType::MODIFY_OPTIONS, (bool)new_config->timer, (bool)new_config->sensor, camera_id));
 }
