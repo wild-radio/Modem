@@ -16,8 +16,10 @@ void WRCPReceiver::run() {
 			received_w = true;
 		}
 
-		if (byte == 'R') {
+		if (byte == 'R' && received_w) {
 			this->receiving = true;
+			received_w = false;
+			clearBuffer();
 			this->addToBuffer('W');
 			this->addToBuffer('R');
 			continue;
