@@ -4,6 +4,7 @@
 #include "utils.hpp"
 #include "yuv.hpp"
 #include "../MiniModem/PTT.hpp"
+#include "../MiniModem/PTTResolver.hpp"
 
 
 void Robot36Encoder::encode(std::string image_filename, std::string source) {
@@ -176,7 +177,7 @@ void Robot36Encoder::transmit(std::string image_filename, std::string source) {
 }
 
 void Robot36Encoder::sendAudio() {
-	auto ptt = new PTT();
+	auto ptt = PTTResolver::resolve();
 	ptt->push();
 	write_pcm(pcm, buffer, buffer_pointer);
 	ptt->release();

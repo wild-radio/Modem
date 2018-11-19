@@ -5,6 +5,7 @@
 #include <string>
 #include "../ModemInterface.hpp"
 #include "PTT.hpp"
+#include "PTTResolver.hpp"
 
 class MiniModem : public ModemInterface {
 public:
@@ -20,7 +21,7 @@ public:
 	}
 
 private:
-	PTT ptt;
+	PTT *ptt = PTTResolver::resolve();
 	std::FILE *read_stream;
 	std::string alsa_option;
 	std::string TX_COMMAND = "minimodem -R 44100 --tx 120 ";

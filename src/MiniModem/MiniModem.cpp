@@ -11,10 +11,10 @@ void MiniModem::writeData(const unsigned char *data, int size) {
 		throw StreamException(1, "Failed to open the stream!");
 	}
 
-	this->ptt.push();
+	this->ptt->push();
 	fwrite(data, sizeof(char), (size_t) size, stream);
 	fclose(stream);
-	this->ptt.release();
+	this->ptt->release();
 }
 
 int MiniModem::readData(unsigned char *data, int size) {
