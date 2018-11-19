@@ -21,7 +21,7 @@ int MiniModem::readData(unsigned char *data, int size) {
 //	ControlRecordAccess::record_mutex.lock();
 //	ControlRecordAccess::record_mutex.unlock();
 
-	std::string command = std::string(RX_COMMAND) + this->alsa_option + " 2>/dev/null";
+	std::string command = std::string(RX_COMMAND) + " 2>/dev/null";
 
 	if (this->read_stream == nullptr) {
 		this->read_stream = popen(command.c_str(), "r");

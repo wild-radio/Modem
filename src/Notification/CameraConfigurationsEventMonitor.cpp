@@ -82,7 +82,8 @@ void CameraConfigurationsEventMonitor::generateNotification() {
 
 	if (new_config->request_photo)
 		notifyPhotoRequested();
-	
+
+	delete (this->config);
 	this->config = new_config;
 }
 
