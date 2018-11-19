@@ -63,10 +63,6 @@ void WRCPController::startSlaveNotifications() {
 }
 
 void WRCPController::mainLoop() {
-	if (this->isSlave()) {
-		//TODO Remove comentary
-		//this->sendInformPresence();
-	}
 	this->id_with_transmission_rights = 0;
 	int last_recived_timestamp = 0;
 	while (true) {
@@ -77,13 +73,17 @@ void WRCPController::mainLoop() {
 		}
 		if (this->request_photo)
 			continue;
-		if (id != 0 &&  this->getTimestamp() - last_recived_timestamp < DEFAULT_TIMEOUT * 2)
+		if (id != 0 && isEnoughWaitingTimeForTransmission(last_recived_timestamp))
 			continue;
 		if (this->incoming_notifications.hasMessage()) {
 			this->handleNotifications();
 			last_recived_timestamp = this->getTimestamp();
 		}
 	}
+}
+
+bool WRCPController::isEnoughWaitingTimeForTransmission(int last_recived_timestamp) const {
+	return getTimestamp() - last_recived_timestamp > DEFAULT_TIMEOUT * 2;
 }
 
 void WRCPController::handlePacket() {

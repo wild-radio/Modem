@@ -98,6 +98,8 @@ private:
 	std::string getPhotoPathFromTimestampAndCameraId(int32_t timestamp, int8_t camera_id);
 
 	int getTimestamp() const;
+
+	bool isEnoughWaitingTimeForTransmission(int last_recived_timestamp) const;
 };
 
 
