@@ -33,8 +33,9 @@ void WRCPReceiver::run() {
 
 void WRCPReceiver::clearBuffer() {
 	this->buffer_pos = 0;
+	/*if ()
 	delete this->buffer;
-	this->buffer = new unsigned char[WRCP_PACKET_SIZE];
+	this->buffer = new unsigned char[WRCP_PACKET_SIZE];*/
 }
 
 void WRCPReceiver::addToBuffer(unsigned char byte) {
