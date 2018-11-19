@@ -40,11 +40,6 @@ void Robot36Decoder::decoder(std::string image_name, std::string source) {
 			int code = 0;
 			if (!vis_code(&vis_reset, &code, cnt_freq, drate))
 				continue;
-			if (0x88 != code) {
-				fprintf(stderr, "%s got unsupported VIS 0x%x, ignoring\n", string_time("%F %T"), code);
-				vis_mode = 0;
-				continue;
-			}
 			fprintf(stderr, "%s got VIS = 0x%x\n", string_time("%F %T"), code);
 			dat_mode = 1;
 			dat_reset = 1;

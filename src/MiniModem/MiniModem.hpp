@@ -22,8 +22,8 @@ private:
 	PTT ptt;
 	std::FILE *read_stream;
 	std::string alsa_option;
-	const char *const TX_COMMAND = "minimodem -R 44100 --tx 300 ";
-	const char *const RX_COMMAND = "minimodem -R 44100 --rx 300 -l 1.5 ";
+	const char *const TX_COMMAND = "minimodem -R 44100 --tx 120 ";
+	const char *const RX_COMMAND = "minimodem -R 44100 --rx 120 ";
 };
 
 
