@@ -15,8 +15,7 @@ void WRCP::print() {
 	std::cout << as_msg << std::endl;
 }
 
-unsigned char *WRCP::getData(int number) {
-	this->packet.message_number = (int8_t)number;
+unsigned char *WRCP::getData() {
 	return (unsigned char*) &this->packet;
 }
 
@@ -72,11 +71,10 @@ int8_t WRCP::getACKAction() {
 }
 
 int8_t WRCP::getPacketNumber() {
-	/*uint8_t number = WRCP::packet_number++;
+	uint8_t number = WRCP::packet_number++;
 	if (number == 255)
 		WRCP::packet_number = 0;
-	return number;*/
-	return 0;
+	return number;
 }
 
 int16_t WRCP::calculateChecksum() {

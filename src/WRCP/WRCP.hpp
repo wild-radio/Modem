@@ -24,7 +24,7 @@ public:
 	WRCP(){};
 	~WRCP();
 
-	unsigned char *getData(int number);
+	unsigned char *getData();
 
 	void print();
 
