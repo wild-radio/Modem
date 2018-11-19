@@ -4,6 +4,7 @@
 
 void WRCPReceiver::run() {
 	this->receiving = false;
+	bool received_w = false;
 	while (true) {
 		ModemInterface *modem = ModemResolver::resolve();
 		unsigned char byte;
@@ -11,8 +12,14 @@ void WRCPReceiver::run() {
 		if (len == 0)
 			continue;
 		if (byte == 'W') {
+			received_w = true;
+		}
+
+		if (byte == 'R') {
 			this->receiving = true;
-			this->clearBuffer();
+			this->addToBuffer('W');
+			this->addToBuffer('R');
+			continue;
 		}
 
 		if (this->receiving) {
