@@ -14,6 +14,7 @@
 #include <fcntl.h>
 #include <zconf.h>
 #include <ctime>
+#include <wiringPi.h>
 
 void WRCPController::startReceiver() {
 	auto receiver = new WRCPReceiver(&this->incoming_packets, &this->outcoming_packets);
@@ -69,6 +70,7 @@ void WRCPController::mainLoop() {
 	this->id_with_transmission_rights = 0;
 	int last_recived_timestamp = 0;
 	while (true) {
+		delay(100);
 		if (this->incoming_packets.hasMessage()) {
 			this->handlePacket();
 			last_recived_timestamp = this->getTimestamp();
