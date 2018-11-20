@@ -80,8 +80,9 @@ void CameraConfigurationsEventMonitor::generateNotification() {
 	if (this->config->horizontal != new_config->horizontal || this->config->vertical != new_config->vertical)
 		notifyAngleChanged(new_config);
 
-	if (new_config->request_photo)
+	if (new_config->request_photo) {
 		notifyPhotoRequested();
+	}
 
 	delete (this->config);
 	this->config = new_config;
