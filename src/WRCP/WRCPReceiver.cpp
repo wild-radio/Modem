@@ -48,6 +48,7 @@ void WRCPReceiver::addToBuffer(unsigned char byte) {
 	WRCP packet = WRCP(this->buffer);
 	auto isNotAckNorNanck = !packet.isACK() && !packet.isNACK();
 	int message_number = packet.getMessageNumber();
+	std::cout << "Message number:" << message_number << std::endl;
 	if (isNotAckNorNanck && this->isInOurList(message_number)) {
 		this->sendACK(packet);
 		return;
@@ -79,7 +80,6 @@ void WRCPReceiver::sendACK(WRCP packet) {
 }
 
 void WRCPReceiver::addToOurList(int message_number) {
-	std::cout << message_number << std::endl;
 	list_message_numbers[list_pointer] = message_number;
 	list_pointer++;
 	/*list_message_numbers.push_back(message_number);
