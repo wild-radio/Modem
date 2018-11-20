@@ -18,8 +18,7 @@ void MiniModem::writeData(const unsigned char *data, int size) {
 }
 
 int MiniModem::readData(unsigned char *data, int size) {
-	int read_size = (int) fread(data, sizeof(char), (size_t)size, this->read_stream);
-	return read_size;
+	return fread(data, sizeof(unsigned char), size, this->read_stream);
 }
 
 void MiniModem::openReadStream() {
