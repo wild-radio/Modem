@@ -23,8 +23,8 @@ private:
 	PTT *ptt = PTTResolver::resolve();
 	std::FILE *read_stream;
 	std::string alsa_option;
-	std::string TX_COMMAND = "minimodem -R 44100 --tx 120 ";
-	std::string RX_COMMAND = "minimodem -R 44100 --rx 120 -c 1.5";
+	std::string TX_COMMAND = "minimodem -R 44100 --tx 56 ";
+	std::string RX_COMMAND = "minimodem -R 44100 --rx 56 -c 1.5";
 };
 
 
