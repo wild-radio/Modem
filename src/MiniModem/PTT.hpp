@@ -11,7 +11,7 @@ public:
 	void push();
 	void release();
 private:
-	const int GPIO_PIN = 15;
+	const int GPIO_PIN = 1;
 };
 
 
