@@ -253,12 +253,12 @@ void WRCPController::handlePhotoReciever(WRCP &packet) {
 
 void WRCPController::sendPhotoToServer(WRCP &packet) {
 	std::string suffix = (request_photo) ? "configuracao/confirmacao/foto" : "fotos";
+	this->request_photo = false;
 	std::stringstream command;
 	command << "timeout 5m ./decoder36 " << (int)packet.getTimestamp() << " " << (int)packet.getCameraId() << " \"" << suffix << "\" &" << std::endl;
 	std::cout << "Spawning decoder with the command" << command.str();
 	sleep(9);
 	std::system(command.str().c_str());
-	this->request_photo = false;
 	sleep(50);
 }
 
