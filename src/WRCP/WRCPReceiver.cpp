@@ -6,6 +6,7 @@ void WRCPReceiver::run() {
 	bool received_w = false;
 	this->buffer = new unsigned char[WRCP_PACKET_SIZE];
 	unsigned char byte;
+	this->clearReceivedList();
 
 	while (true) {
 		int len = modem.readData(&byte, 1);
@@ -51,6 +52,7 @@ void WRCPReceiver::addToBuffer(unsigned char byte) {
 		return;
 	}
 	this->incoming_queue->post(packet);
+	this->moveList();
 	this->addToOurList(packet);
 
 	this->receiving = false;
@@ -58,12 +60,15 @@ void WRCPReceiver::addToBuffer(unsigned char byte) {
 }
 
 bool WRCPReceiver::isInOurList(WRCP packet) {
-	std::pair<int, int> pair = getPair(packet);
-	for (auto &l_pair : this->received_packets) {
-		if (l_pair == pair)
+	auto pair = getPair(packet);
+	for (auto &l_pair : this->list) {
+		if (*l_pair == *pair) {
+			delete pair;
 			return true;
+		}
 	}
 
+	delete pair;
 	return false;
 }
 
@@ -75,15 +80,31 @@ void WRCPReceiver::sendACK(WRCP packet) {
 }
 
 void WRCPReceiver::addToOurList(WRCP packet) {
-	std::pair<int, int> pair = getPair(packet);
-	this->received_packets.push_back(pair);
-	if (this->received_packets.size() >= MAX_RECEIVED_PACKETS_BUFFER)
-		this->received_packets.pop_back();
+	auto pair = getPair(packet);
+	for (int i = 0; i < MAX_RECEIVED_PACKETS_BUFFER; i++) {
+		if (list[i] == nullptr) {
+			list[i] = pair;
+			return;
+		}
+	}
 }
 
-std::pair<int, int> WRCPReceiver::getPair(WRCP &packet) const {
+std::pair<int, int> * WRCPReceiver::getPair(WRCP &packet) const {
 	int sender_id = packet.getSender();
 	int message_number = packet.getMessageNumber();
-	auto pair = std::pair<int, int>(sender_id, message_number);
-	return pair;
+	return new std::pair<int, int>(sender_id, message_number);
+}
+
+void WRCPReceiver::clearReceivedList() {
+	for (int i = 0; i < MAX_RECEIVED_PACKETS_BUFFER; i++)
+		list[i] = nullptr;
+}
+
+void WRCPReceiver::moveList() {
+	auto array_limit = MAX_RECEIVED_PACKETS_BUFFER - 1;
+	if (list[array_limit] != nullptr)
+		delete list[array_limit];
+	for(int i = array_limit; i > 1; i++) {
+		list[i - 1] = list[i];
+	}
 }

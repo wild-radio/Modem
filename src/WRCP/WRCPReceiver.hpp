@@ -27,7 +27,7 @@ private:
 	bool receiving;
 	MessageQueue<WRCP> *incoming_queue;
 	MessageQueue<WRCP> *outcoming_queue;
-	std::vector<std::pair<int, int>> received_packets;
+	std::pair<int, int> *list[MAX_RECEIVED_PACKETS_BUFFER];
 	MiniModem modem;
 
 	void clearBuffer();
@@ -36,7 +36,11 @@ private:
 	bool isInOurList(WRCP packet);
 	void addToOurList(WRCP packet);
 
-	std::pair<int, int> getPair(WRCP &packet) const;
+	std::pair<int, int> * getPair(WRCP &packet) const;
+
+	void clearReceivedList();
+
+	void moveList();
 };
 
 
