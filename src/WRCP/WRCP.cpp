@@ -222,3 +222,7 @@ void WRCP::clearData() {
 	this->packet.data[2] = 0;
 	this->packet.data[3] = 0;
 }
+
+_wrcp_packet WRCP::getPacket() {
+	return this->packet;
+}

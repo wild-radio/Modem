@@ -49,22 +49,14 @@ public:
 	int8_t getSender() { return this->packet.sender_id; }
 	int8_t getCameraId();
 	int32_t getTimestamp();
-
 	void createAngleChange(int8_t receiver_id, int8_t angle_h, int8_t angle_v, int8_t camera_id);
-
-
 	int8_t getVerticalAngle();
-
 	int8_t getHorizontalAngle();
-
 	void createCameraOptions(int8_t receiver_id, int8_t timer_for_capture, int8_t use_sensor, int8_t camera_id);
-
-
 	int8_t getUseSensor();
-
 	int8_t getTimerForCapture();
-
 	void createRequestPhoto(int8_t receiver_id, int8_t camera_id);
+	_wrcp_packet getPacket();
 
 	bool operator==(WRCP& packet)const;
 

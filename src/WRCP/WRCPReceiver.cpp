@@ -58,8 +58,9 @@ void WRCPReceiver::addToBuffer(unsigned char byte) {
 }
 
 bool WRCPReceiver::isInOurList(WRCP packet) {
-	for (auto &r_packet : this->received_packets) {
-		if (r_packet == packet)
+	auto b_packet =  packet.getPacket();
+	for (auto &a_packet : this->received_packets) {
+		if (isEqual(a_packet, b_packet))
 			return true;
 	}
 
@@ -74,8 +75,14 @@ void WRCPReceiver::sendACK(WRCP packet) {
 }
 
 void WRCPReceiver::addToOurList(WRCP packet) {
-	this->received_packets.push_back(packet);
+	this->received_packets.push_back(packet.getPacket());
 	
 	if (this->received_packets.size() >= MAX_RECEIVED_PACKETS_BUFFER)
 		this->received_packets.pop_back();
+}
+
+bool WRCPReceiver::isEqual(_wrcp_packet &packet_a, _wrcp_packet &packet_b) {
+	bool is_same_sender = packet_a.sender_id == packet_b.sender_id;
+	bool is_same_number = packet_a.message_number == packet_b.sender_id;
+	return is_same_number && is_same_sender;
 }
