@@ -24,7 +24,7 @@ private:
 	std::FILE *read_stream;
 	std::string alsa_option;
 	std::string TX_COMMAND = "minimodem -R 44100 --tx 300";
-	std::string RX_COMMAND = "minimodem -R 44100 --rx 300 c 1";
+	std::string RX_COMMAND = "minimodem -R 44100 --rx 300 -c 1";
 };
 
 
