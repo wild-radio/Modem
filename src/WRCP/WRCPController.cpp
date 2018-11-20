@@ -267,14 +267,12 @@ void WRCPController::sendPhotoToServer(WRCP &packet) {
 void WRCPController::sendACK(WRCP packet) {
 	WRCP ack_packet;
 	ack_packet.createACK(packet);
-	sleep(1);
 	this->outcoming_packets.post(ack_packet);
 }
 
 void WRCPController::sendNACK(WRCP packet) {
 	WRCP nack_packet;
 	nack_packet.createNACK(packet, this->id);
-	sleep(1);
 	this->outcoming_packets.post(nack_packet);
 }
 
