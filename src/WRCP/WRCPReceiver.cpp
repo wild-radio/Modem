@@ -68,8 +68,8 @@ bool WRCPReceiver::isInOurList(int message_number) {
 	/*for (int i = 0; i < list_message_numbers.size(); i++) {
 		if (list_message_numbers[i] == message_number)
 			return true;
-	}
-	return false;*/
+	}*/
+	return false;
 }
 
 void WRCPReceiver::sendACK(WRCP packet) {
