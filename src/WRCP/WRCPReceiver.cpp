@@ -6,7 +6,6 @@ void WRCPReceiver::run() {
 	bool received_w = false;
 	this->buffer = new unsigned char[WRCP_PACKET_SIZE];
 	unsigned char byte;
-	this->clearReceivedList();
 
 	while (true) {
 		int len = modem.readData(&byte, 1);
@@ -52,7 +51,6 @@ void WRCPReceiver::addToBuffer(unsigned char byte) {
 		return;
 	}
 	this->incoming_queue->post(packet);
-	this->moveList();
 	this->addToOurList(packet);
 
 	this->receiving = false;
@@ -60,17 +58,11 @@ void WRCPReceiver::addToBuffer(unsigned char byte) {
 }
 
 bool WRCPReceiver::isInOurList(WRCP packet) {
-	auto pair = getPair(packet);
-	for (int i = 0; i < MAX_RECEIVED_PACKETS_BUFFER; i++) {
-		if (list[i] == nullptr)
-			continue;
-		if (*list[i] == *pair) {
-			delete pair;
+	auto pair = std::pair<const int, const int >((const int)packet.getSender(), (const int)packet.getMessageNumber());
+	for (auto &cursor_pair: list_message_numbers) {
+		if (cursor_pair == pair)
 			return true;
-		}
 	}
-
-	delete pair;
 	return false;
 }
 
@@ -82,31 +74,7 @@ void WRCPReceiver::sendACK(WRCP packet) {
 }
 
 void WRCPReceiver::addToOurList(WRCP packet) {
-	auto pair = getPair(packet);
-	for (int i = 0; i < MAX_RECEIVED_PACKETS_BUFFER; i++) {
-		if (list[i] == nullptr) {
-			list[i] = pair;
-			return;
-		}
-	}
-}
-
-std::pair<int, int> * WRCPReceiver::getPair(WRCP &packet) const {
-	int sender_id = packet.getSender();
-	int message_number = packet.getMessageNumber();
-	return new std::pair<int, int>(sender_id, message_number);
-}
-
-void WRCPReceiver::clearReceivedList() {
-	for (int i = 0; i < MAX_RECEIVED_PACKETS_BUFFER; i++)
-		list[i] = nullptr;
-}
-
-void WRCPReceiver::moveList() {
-	auto array_limit = MAX_RECEIVED_PACKETS_BUFFER - 1;
-	if (list[array_limit] != nullptr)
-		delete list[array_limit];
-	for(int i = array_limit; i > 1; i++) {
-		list[i - 1] = list[i];
-	}
+	auto pair = std::pair<const int, const int >((const int)packet.getSender(), (const int)packet.getMessageNumber());
+	list_message_numbers.push_back(pair);
+	//if (list_message_numbers.size() == MAX_RECEIVED_PACKETS_BUFFER)
 }
