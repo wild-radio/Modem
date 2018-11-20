@@ -185,7 +185,6 @@ void WRCPController::processPacket(WRCP packet) {
 	}
 
 	if (this->id == 0 && packet.getSender() != this->id_with_transmission_rights) {
-		//this->incoming_packets.post(packet);
 		return;
 	}
 
@@ -194,7 +193,6 @@ void WRCPController::processPacket(WRCP packet) {
 		this->id_with_transmission_rights = 0;
 		return;
 	}
-
 
 
 	if (packet.isAngleChange()) {
@@ -258,9 +256,9 @@ void WRCPController::sendPhotoToServer(WRCP &packet) {
 	std::stringstream command;
 	command << "timeout 5m ./decoder36 " << (int)packet.getTimestamp() << " " << (int)packet.getCameraId() << " \"" << suffix << "\" &" << std::endl;
 	std::cout << "Spawning decoder with the command" << command.str();
-	sleep(8);
+	sleep(9);
 	std::system(command.str().c_str());
-	request_photo = false;
+	this->request_photo = false;
 	sleep(50);
 }
 

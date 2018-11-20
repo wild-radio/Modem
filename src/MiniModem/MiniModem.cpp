@@ -6,7 +6,7 @@
 void MiniModem::writeData(const unsigned char *data, int size) {
 	std::string command = TX_COMMAND;
 	std::FILE *stream = popen(command.c_str(), "w");
-
+	this->ptt = PTTResolver::resolve();
 	if (stream == nullptr) {
 		throw StreamException(1, "Failed to open the stream!");
 	}

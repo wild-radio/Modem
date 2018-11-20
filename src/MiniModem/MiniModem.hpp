@@ -20,7 +20,7 @@ public:
 	}
 
 private:
-	PTT *ptt = PTTResolver::resolve();
+	PTT *ptt;
 	std::FILE *read_stream;
 	std::string alsa_option;
 	std::string TX_COMMAND = "minimodem -R 44100 --tx 300";
