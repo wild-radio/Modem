@@ -59,8 +59,12 @@ void WRCPReceiver::addToBuffer(unsigned char byte) {
 
 bool WRCPReceiver::isInOurList(WRCP packet) {
 	auto pair = std::pair<const int, const int >((const int)packet.getSender(), (const int)packet.getMessageNumber());
-	for (auto &cursor_pair: list_message_numbers) {
+	/*for (auto &cursor_pair: list_message_numbers) {
 		if (cursor_pair == pair)
+			return true;
+	}*/
+	for (int i = 0; i < list_message_numbers.size(); i++) {
+		if (list_message_numbers[i] == pair)
 			return true;
 	}
 	return false;
@@ -76,5 +80,4 @@ void WRCPReceiver::sendACK(WRCP packet) {
 void WRCPReceiver::addToOurList(WRCP packet) {
 	auto pair = std::pair<const int, const int >((const int)packet.getSender(), (const int)packet.getMessageNumber());
 	list_message_numbers.push_back(pair);
-	//if (list_message_numbers.size() == MAX_RECEIVED_PACKETS_BUFFER)
 }

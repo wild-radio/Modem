@@ -4,7 +4,6 @@
 static const int MAX_RECEIVED_PACKETS_BUFFER = 15;
 
 #include <vector>
-#include <list>
 #include "../ThreadInterface.hpp"
 #include "WRCP.hpp"
 #include "../MessageQueue/MessageQueue.hpp"
@@ -28,7 +27,7 @@ private:
 	bool receiving;
 	MessageQueue<WRCP> *incoming_queue;
 	MessageQueue<WRCP> *outcoming_queue;
-	std::list<std::pair<const int, const int>> list_message_numbers;
+	std::vector<std::pair<const int, const int>> list_message_numbers;
 	MiniModem modem;
 
 	void clearBuffer();
