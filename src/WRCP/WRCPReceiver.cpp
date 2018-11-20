@@ -70,7 +70,7 @@ bool WRCPReceiver::isInOurList(int message_number) {
 void WRCPReceiver::sendACK(WRCP packet) {
 	WRCP ack_packet;
 	ack_packet.createACK(packet);
-
+	std::cout << "Already processed! Sending ACK.." << std::endl;
 	this->outcoming_queue->post(ack_packet);
 }
 

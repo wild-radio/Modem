@@ -266,6 +266,7 @@ void WRCPController::sendACK(WRCP packet) {
 	WRCP ack_packet;
 	sleep(1);
 	ack_packet.createACK(packet);
+	std::cout << "Sendig ACK.." << std::endl;
 	this->outcoming_packets.post(ack_packet);
 }
 
@@ -273,6 +274,7 @@ void WRCPController::sendNACK(WRCP packet) {
 	WRCP nack_packet;
 	sleep(1);
 	nack_packet.createNACK(packet, this->id);
+	std::cout << "Sendig NACK.." << std::endl;
 	this->outcoming_packets.post(nack_packet);
 }
 
