@@ -27,14 +27,14 @@ private:
 	bool receiving;
 	MessageQueue<WRCP> *incoming_queue;
 	MessageQueue<WRCP> *outcoming_queue;
-	std::vector<std::pair<const int, const int>> list_message_numbers;
+	std::vector<int> list_message_numbers;
 	MiniModem modem;
 
 	void clearBuffer();
 	void addToBuffer(unsigned char byte);
 	void sendACK(WRCP packet);
-	bool isInOurList(WRCP packet);
-	void addToOurList(WRCP packet);
+	bool isInOurList(int message_number);
+	void addToOurList(int message_number);
 };
 
 

@@ -46,25 +46,21 @@ void WRCPReceiver::addToBuffer(unsigned char byte) {
 	}
 
 	WRCP packet = WRCP(this->buffer);
-	if (this->isInOurList(packet)) {
+	int message_number = packet.getMessageNumber();
+	if (this->isInOurList(message_number)) {
 		this->sendACK(packet);
 		return;
 	}
-	this->addToOurList(packet);
+	this->addToOurList(message_number);
 	this->incoming_queue->post(packet);
 
 	this->receiving = false;
 	this->clearBuffer();
 }
 
-bool WRCPReceiver::isInOurList(WRCP packet) {
-	auto pair = std::pair<const int, const int >((const int)packet.getSender(), (const int)packet.getMessageNumber());
-	/*for (auto &cursor_pair: list_message_numbers) {
-		if (cursor_pair == pair)
-			return true;
-	}*/
+bool WRCPReceiver::isInOurList(int message_number) {
 	for (int i = 0; i < list_message_numbers.size(); i++) {
-		if (list_message_numbers[i] == pair)
+		if (list_message_numbers[i] == message_number)
 			return true;
 	}
 	return false;
@@ -77,7 +73,8 @@ void WRCPReceiver::sendACK(WRCP packet) {
 	this->outcoming_queue->post(ack_packet);
 }
 
-void WRCPReceiver::addToOurList(WRCP packet) {
-	auto pair = std::pair<const int, const int >((const int)packet.getSender(), (const int)packet.getMessageNumber());
-	list_message_numbers.push_back(pair);
+void WRCPReceiver::addToOurList(int message_number) {
+	list_message_numbers.push_back(message_number);
+	if (list_message_numbers.size() > MAX_RECEIVED_PACKETS_BUFFER)
+		list_message_numbers.pop_back();
 }
