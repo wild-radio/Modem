@@ -58,9 +58,9 @@ void WRCPReceiver::addToBuffer(unsigned char byte) {
 }
 
 bool WRCPReceiver::isInOurList(WRCP packet) {
-	auto b_packet =  packet.getPacket();
-	for (auto &a_packet : this->received_packets) {
-		if (isEqual(a_packet, b_packet))
+	std::pair<int, int> pair = getPair(packet);
+	for (auto &l_pair : this->received_packets) {
+		if (l_pair == pair)
 			return true;
 	}
 
@@ -75,17 +75,15 @@ void WRCPReceiver::sendACK(WRCP packet) {
 }
 
 void WRCPReceiver::addToOurList(WRCP packet) {
-	if (packet.isACK() || packet.isNACK())
-		return;
-	auto spacket = packet.getPacket();
-	this->received_packets.push_back(spacket);
-	
+	std::pair<int, int> pair = getPair(packet);
+	this->received_packets.push_back(pair);
 	if (this->received_packets.size() >= MAX_RECEIVED_PACKETS_BUFFER)
 		this->received_packets.pop_back();
 }
 
-bool WRCPReceiver::isEqual(_wrcp_packet &packet_a, _wrcp_packet &packet_b) {
-	bool is_same_sender = packet_a.sender_id == packet_b.sender_id;
-	bool is_same_number = packet_a.message_number == packet_b.sender_id;
-	return is_same_number && is_same_sender;
+std::pair<int, int> WRCPReceiver::getPair(WRCP &packet) const {
+	int sender_id = packet.getSender();
+	int message_number = packet.getMessageNumber();
+	auto pair = std::pair<int, int>(sender_id, message_number);
+	return pair;
 }

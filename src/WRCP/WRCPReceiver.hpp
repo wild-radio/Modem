@@ -27,7 +27,7 @@ private:
 	bool receiving;
 	MessageQueue<WRCP> *incoming_queue;
 	MessageQueue<WRCP> *outcoming_queue;
-	std::vector<_wrcp_packet> received_packets;
+	std::vector<std::pair> received_packets;
 	MiniModem modem;
 
 	void clearBuffer();
@@ -36,7 +36,7 @@ private:
 	bool isInOurList(WRCP packet);
 	void addToOurList(WRCP packet);
 
-	bool isEqual(_wrcp_packet &packet_a, _wrcp_packet &packet_b);
+	std::pair<int, int> getPair(WRCP &packet) const;
 };
 
 
