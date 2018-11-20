@@ -59,6 +59,7 @@ void WRCPReceiver::addToBuffer(unsigned char byte) {
 }
 
 bool WRCPReceiver::isInOurList(int message_number) {
+
 	for (int i = 0; i < list_message_numbers.size(); i++) {
 		if (list_message_numbers[i] == message_number)
 			return true;
@@ -74,6 +75,7 @@ void WRCPReceiver::sendACK(WRCP packet) {
 }
 
 void WRCPReceiver::addToOurList(int message_number) {
+	std::cout << message_number << std::endl;
 	list_message_numbers.push_back(message_number);
 	if (list_message_numbers.size() > MAX_RECEIVED_PACKETS_BUFFER)
 		list_message_numbers.pop_back();
