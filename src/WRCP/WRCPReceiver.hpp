@@ -7,6 +7,7 @@ static const int MAX_RECEIVED_PACKETS_BUFFER = 6;
 #include "../ThreadInterface.hpp"
 #include "WRCP.hpp"
 #include "../MessageQueue/MessageQueue.hpp"
+#include "../MiniModem/MiniModem.hpp"
 
 class WRCPReceiver : public ThreadInterface {
 public:
@@ -27,6 +28,7 @@ private:
 	MessageQueue<WRCP> *incoming_queue;
 	MessageQueue<WRCP> *outcoming_queue;
 	std::vector<WRCP> received_packets;
+	MiniModem modem;
 
 	void clearBuffer();
 

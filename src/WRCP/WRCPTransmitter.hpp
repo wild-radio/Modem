@@ -5,6 +5,7 @@
 #include "../ThreadInterface.hpp"
 #include "WRCP.hpp"
 #include "../MessageQueue/MessageQueue.hpp"
+#include "../MiniModem/MiniModem.hpp"
 
 class WRCPTransmitter : public ThreadInterface {
 public:
@@ -15,6 +16,7 @@ public:
 
 private:
 	MessageQueue<WRCP> *outcoming_packets;
+	MiniModem modem;
 };
 
 

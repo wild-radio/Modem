@@ -1,16 +1,14 @@
 #include <iostream>
 #include "WRCPReceiver.hpp"
-#include "../ModemResolver.hpp"
 
 void WRCPReceiver::run() {
 	this->receiving = false;
 	bool received_w = false;
 	this->buffer = new unsigned char[WRCP_PACKET_SIZE];
-	ModemInterface *modem = ModemResolver::resolve();
 	unsigned char byte;
 
 	while (true) {
-		int len = modem->readData(&byte, 1);
+		int len = modem.readData(&byte, 1);
 		if (len == 0)
 			continue;
 		if (byte == 'W') {
