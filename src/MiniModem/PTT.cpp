@@ -10,11 +10,10 @@ PTT::PTT() {
 void PTT::push() {
 	delay(1000);
 	digitalWrite (GPIO_PIN, HIGH);
-	delay(1000);
+	delay(1500);
 }
 
 void PTT::release() {
-	delay(100);
 	digitalWrite (GPIO_PIN, LOW);
 }
 
