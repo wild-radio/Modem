@@ -315,7 +315,7 @@ void WRCPController::sendPhoto(int32_t timestamp, int8_t camera_id, std::string 
 
 	this->outcoming_packets.post(photo_packet);
 
-	bool success = handleACKAndNACK(photo_packet, 3, DEFAULT_TIMEOUT);
+	bool success = handleACKAndNACK(photo_packet, 5, DEFAULT_TIMEOUT);
 
 	if (!success) {
 		std::cout << "Failed trying to transmit photo info!" << std::endl;

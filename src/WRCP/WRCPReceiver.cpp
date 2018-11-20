@@ -6,9 +6,10 @@ void WRCPReceiver::run() {
 	this->receiving = false;
 	bool received_w = false;
 	this->buffer = new unsigned char[WRCP_PACKET_SIZE];
+	ModemInterface *modem = ModemResolver::resolve();
+	unsigned char byte;
+
 	while (true) {
-		ModemInterface *modem = ModemResolver::resolve();
-		unsigned char byte;
 		int len = modem->readData(&byte, 1);
 		if (len == 0)
 			continue;
