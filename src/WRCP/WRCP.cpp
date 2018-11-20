@@ -111,7 +111,7 @@ void WRCP::createNACK(WRCP packet_to_respond, int8_t sender_id) {
 	this->clearData();
 	this->packet.sender_id = sender_id;
 	this->packet.receiver_id = packet_to_respond.packet.sender_id;
-	this->packet.message_number = packet_to_respond.getPacketNumber();
+	this->packet.message_number = packet_to_respond.getMessageNumber();
 	this->packet.action = this->getNACKAction();
 	this->packet.checksum = this->calculateChecksum();
 }
@@ -124,7 +124,7 @@ void WRCP::createACK(WRCP packet_to_respond) {
 	this->addProtocolIdentifier();
 	this->packet.sender_id = packet_to_respond.packet.receiver_id;
 	this->packet.receiver_id = packet_to_respond.packet.sender_id;
-	this->packet.message_number = packet_to_respond.getPacketNumber();
+	this->packet.message_number = packet_to_respond.getMessageNumber();
 	this->packet.action = this->getACKAction();
 	this->packet.checksum = this->calculateChecksum();
 }
@@ -225,4 +225,8 @@ void WRCP::clearData() {
 
 _wrcp_packet WRCP::getPacket() {
 	return this->packet;
+}
+
+const int8_t WRCP::getMessageNumber() {
+	return packet.message_number;
 }

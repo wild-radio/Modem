@@ -55,6 +55,7 @@ public:
 	void createCameraOptions(int8_t receiver_id, int8_t timer_for_capture, int8_t use_sensor, int8_t camera_id);
 	int8_t getUseSensor();
 	int8_t getTimerForCapture();
+	const int8_t getMessageNumber();
 	void createRequestPhoto(int8_t receiver_id, int8_t camera_id);
 	_wrcp_packet getPacket();
 
@@ -78,9 +79,7 @@ private:
 	int8_t getPhotoAction();
 
 	int8_t getAngleChangeAction();
-
 	int8_t getCameraOptionsAction();
-
 	int8_t getRequestPhotoAction();
 
 	void clearData();

@@ -67,7 +67,7 @@ private:
 
 	WRCP getReturn(float timeout);
 
-	bool handleACKAndNACK(const WRCP &packet, int trys, int timeout);
+	bool handleACKAndNACK(WRCP &packet, int trys, int timeout);
 	bool resendWhileNotAck(WRCP &r_packet, int r_timeout);
 
 	void sendACK(WRCP packet);
@@ -94,9 +94,7 @@ private:
 	void requestPhoto(WRCP packet);
 
 	std::string getPhotoPath(WRCP &packet) const;
-
 	std::string getPhotoPathFromTimestampAndCameraId(int32_t timestamp, int8_t camera_id);
-
 	int getTimestamp() const;
 
 	bool isEnoughWaitingTimeForTransmission(int last_recived_timestamp) const;

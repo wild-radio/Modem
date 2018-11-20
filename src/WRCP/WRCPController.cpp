@@ -100,15 +100,14 @@ bool WRCPController::isSlave() {
 	return this->id != 0;
 }
 
-bool WRCPController::handleACKAndNACK(const WRCP &packet, int trys, int timeout) {
-	WRCP r_packet;
+bool WRCPController::handleACKAndNACK(WRCP &packet, int trys, int timeout) {
 	bool success = false;
 	int r_timeout = timeout;
 	for (int i = 0; i < trys; i++) {
 		if (timeout == -1)
 			r_timeout = rand() % 5 + 8;
 		try {
-			success = resendWhileNotAck(r_packet, r_timeout);
+			success = resendWhileNotAck(packet, r_timeout);
 			break;
 		} catch (WRCPTimeoutException exception) {
 			success = false;
@@ -122,14 +121,14 @@ bool WRCPController::handleACKAndNACK(const WRCP &packet, int trys, int timeout)
 	return success;
 }
 
-bool WRCPController::resendWhileNotAck(WRCP &r_packet, int r_timeout) {
+bool WRCPController::resendWhileNotAck(WRCP &packet, int r_timeout) {
 	for (int i = 0; i < 5; i++) {
-		r_packet = getReturn(r_timeout);
+		auto r_packet = getReturn(r_timeout);
 
 		if (!r_packet.isValidChecksum())
 			continue;
 
-		if (r_packet.isACK())
+		if (r_packet.isACK() && r_packet.getMessageNumber() == packet.getMessageNumber())
 			return true;
 
 		if (r_packet.isNACK())
