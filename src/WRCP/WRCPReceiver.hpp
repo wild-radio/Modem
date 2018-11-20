@@ -27,7 +27,7 @@ private:
 	bool receiving;
 	MessageQueue<WRCP> *incoming_queue;
 	MessageQueue<WRCP> *outcoming_queue;
-	std::vector<std::pair> received_packets;
+	std::vector<std::pair<int, int>> received_packets;
 	MiniModem modem;
 
 	void clearBuffer();
