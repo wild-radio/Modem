@@ -50,8 +50,8 @@ void WRCPReceiver::addToBuffer(unsigned char byte) {
 		this->sendACK(packet);
 		return;
 	}
-	this->incoming_queue->post(packet);
 	this->addToOurList(packet);
+	this->incoming_queue->post(packet);
 
 	this->receiving = false;
 	this->clearBuffer();
