@@ -75,6 +75,8 @@ void WRCPReceiver::sendACK(WRCP packet) {
 }
 
 void WRCPReceiver::addToOurList(WRCP packet) {
+	if (packet.isACK() || packet.isNACK())
+		return;
 	this->received_packets.push_back(packet.getPacket());
 	
 	if (this->received_packets.size() >= MAX_RECEIVED_PACKETS_BUFFER)
