@@ -46,12 +46,14 @@ void WRCPReceiver::addToBuffer(unsigned char byte) {
 	}
 
 	WRCP packet = WRCP(this->buffer);
+	auto isNotAckNorNanck = !packet.isACK() && !packet.isNACK();
 	int message_number = packet.getMessageNumber();
-	if (this->isInOurList(message_number)) {
+	if (isNotAckNorNanck && this->isInOurList(message_number)) {
 		this->sendACK(packet);
 		return;
 	}
-	this->addToOurList(message_number);
+	if (isNotAckNorNanck)
+		this->addToOurList(message_number);
 	this->incoming_queue->post(packet);
 
 	this->receiving = false;
