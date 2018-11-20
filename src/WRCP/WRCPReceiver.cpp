@@ -61,8 +61,10 @@ void WRCPReceiver::addToBuffer(unsigned char byte) {
 
 bool WRCPReceiver::isInOurList(WRCP packet) {
 	auto pair = getPair(packet);
-	for (auto &l_pair : this->list) {
-		if (*l_pair == *pair) {
+	for (int i = 0; i < MAX_RECEIVED_PACKETS_BUFFER; i++) {
+		if (list[i] == nullptr)
+			continue;
+		if (*list[i] == *pair) {
 			delete pair;
 			return true;
 		}
