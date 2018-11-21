@@ -39,6 +39,8 @@ private:
 	bool wasCameraOptionsModified(const CameraConfigurations *new_config) const;
 
 	int getTimestamp() const;
+
+	int executeIfIsMyEvent(int last_event_timestamp, const inotify_event *event);
 };
 
 
