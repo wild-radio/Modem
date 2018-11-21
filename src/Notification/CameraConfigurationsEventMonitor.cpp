@@ -50,17 +50,29 @@ CameraConfigurationsEventMonitor::~CameraConfigurationsEventMonitor() {
 
 void CameraConfigurationsEventMonitor::processEvent(int length, const char *buffer) {
 	int i = 0;
+	int last_event_timestamp = 0;
 	while (i < length) {
 		inotify_event *event = (struct inotify_event *)&buffer[i];
 
 		if (!event->len)
 			break;
 
-		if (wasMyConfigModified(event))
-			this->generateNotification();
-
 		i += EVENT_SIZE + event->len;
+
+		if (this->getTimestamp() - last_event_timestamp < 2)
+			continue;
+
+		if (wasMyConfigModified(event)) {
+			this->generateNotification();
+			last_event_timestamp = this->getTimestamp();
+		}
 	}
+}
+
+
+int CameraConfigurationsEventMonitor::getTimestamp() const {
+	time_t timestamp = time(nullptr);
+	return (int)timestamp;
 }
 
 bool CameraConfigurationsEventMonitor::wasMyConfigModified(const inotify_event *event) const {

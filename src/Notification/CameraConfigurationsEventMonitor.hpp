@@ -37,6 +37,8 @@ private:
 	void notifyModifiedOptions(CameraConfigurations *new_config);
 
 	bool wasCameraOptionsModified(const CameraConfigurations *new_config) const;
+
+	int getTimestamp() const;
 };
 
 

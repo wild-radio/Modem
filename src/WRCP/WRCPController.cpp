@@ -208,7 +208,7 @@ void WRCPController::processPacket(WRCP packet) {
 	if (packet.isCameraOptions()) {
 		std::cout <<  "Master requested an camera options change, timer for capture of "
 		          << (int)packet.getTimerForCapture() << " and use sensor is "
-		          << (int)packet.getUseSensor() << " and enable is <<"
+		          << (int)packet.getUseSensor() << " and enable is "
 				  << (int)packet.getCameraEnable() << "for the camera "
 		          << (int)packet.getCameraId() << std::endl;
 		this->updateOptions(packet);
@@ -424,6 +424,7 @@ void WRCPController::updateOptions(WRCP packet) {
 	auto *config = getConfigurations(packet.getCameraId());
 	config->sensor = packet.getUseSensor();
 	config->timer = packet.getTimerForCapture();
+	config->active = packet.getCameraEnable();
 	config->request_photo = 0;
 	config->saveConfigurations();
 }
