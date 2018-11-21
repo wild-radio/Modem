@@ -1,5 +1,6 @@
 #include <cstring>
 #include "WRCP.hpp"
+#include "WRCPNumberResolver.hpp"
 
 #include <string>
 #include <iostream>
@@ -72,11 +73,8 @@ int8_t WRCP::getACKAction() {
 }
 
 int8_t WRCP::getPacketNumber() {
-	std::lock_guard<std::mutex> lock(m_number);
-	uint8_t number = WRCP::packet_number++;
-	if (number == 255)
-		WRCP::packet_number = 0;
-	return number;
+	auto number_gen = WRCPNumberResolver::resolve();
+	return number_gen->getNumber();
 }
 
 int16_t WRCP::calculateChecksum() {
