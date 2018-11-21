@@ -5,7 +5,7 @@
 #include "WRCPTransmitter.hpp"
 
 void WRCPTransmitter::run() {
-	unsigned char data[30];
+	unsigned char data[BUFFER_SIZE_TRANSMITTER];
 	while (true) {
 		if (!this->outcoming_packets->hasMessage()) {
 			delay(300);
@@ -13,9 +13,9 @@ void WRCPTransmitter::run() {
 		}
 
 		WRCP packet = this->outcoming_packets->pull();
-		//bzero(data, 30);
+		bzero(data, BUFFER_SIZE_TRANSMITTER);
 		unsigned char *wrcp_data = packet.getData();
-		//memcpy(data + 10, wrcp_data, (size_t)WRCP_PACKET_SIZE);
+		memcpy(data + 5, wrcp_data, (size_t)WRCP_PACKET_SIZE);
 		modem.writeData(wrcp_data, WRCP_PACKET_SIZE);
 	}
 }
