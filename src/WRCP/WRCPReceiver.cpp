@@ -80,7 +80,7 @@ void WRCPReceiver::sendACK(WRCP packet) {
 }
 
 void WRCPReceiver::addToOurList(int message_number) {
-	list_message_numbers.push_back(message_number);
+	list_message_numbers.insert(list_message_numbers.begin(), message_number);
 	if (list_message_numbers.size() > MAX_RECEIVED_PACKETS_BUFFER)
 		list_message_numbers.pop_back();
 }
