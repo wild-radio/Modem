@@ -46,14 +46,21 @@ void WRCPReceiver::addToBuffer(unsigned char byte) {
 	}
 
 	WRCP packet = WRCP(this->buffer);
-	auto isNotAckNorNanck = !packet.isACK() && !packet.isNACK();
+	auto valid = packet.isValidChecksum();
+	if (!valid) {
+		this->receiving = false;
+		clearBuffer();
+		return;
+	}
+
+	auto isNotAckNorNack = !packet.isACK() && !packet.isNACK();
 	int message_number = packet.getMessageNumber();
 	std::cout << "Message number:" << message_number << std::endl;
-	if (isNotAckNorNanck && this->isInOurList(message_number)) {
+	if (isNotAckNorNack && this->isInOurList(message_number)) {
 		this->sendACK(packet);
 		return;
 	}
-	if (isNotAckNorNanck)
+	if (isNotAckNorNack)
 		this->addToOurList(message_number);
 	this->incoming_queue->post(packet);
 
@@ -62,9 +69,6 @@ void WRCPReceiver::addToBuffer(unsigned char byte) {
 }
 
 bool WRCPReceiver::isInOurList(int message_number) {
-	/*for (int i = 0; i < list_pointer; i++)
-		if (list_message_numbers[i] == message_number)
-			return true;*/
 	for (int i = 0; i < list_message_numbers.size(); i++) {
 		if (list_message_numbers[i] == message_number)
 			return true;
