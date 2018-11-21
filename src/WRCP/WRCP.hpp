@@ -53,9 +53,11 @@ public:
 	void createAngleChange(int8_t receiver_id, int8_t angle_h, int8_t angle_v, int8_t camera_id);
 	int8_t getVerticalAngle();
 	int8_t getHorizontalAngle();
-	void createCameraOptions(int8_t receiver_id, int8_t timer_for_capture, int8_t use_sensor, int8_t camera_id);
+	void createCameraOptions(int8_t receiver_id, int8_t timer_for_capture, int8_t use_sensor, int8_t enable,
+		                         int8_t camera_id);
 	int8_t getUseSensor();
 	int8_t getTimerForCapture();
+	int8_t getCameraEnable();
 	const int8_t getMessageNumber();
 	void createRequestPhoto(int8_t receiver_id, int8_t camera_id);
 	_wrcp_packet getPacket();
@@ -69,7 +71,7 @@ private:
 
 	void addProtocolIdentifier();
 
-	int8_t getPacketNumber();
+	static int8_t getPacketNumber();
 	int8_t getInformPresenceAction();
 
 	int16_t calculateChecksum();

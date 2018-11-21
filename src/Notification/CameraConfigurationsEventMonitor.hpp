@@ -35,6 +35,8 @@ private:
 	void notifyPhotoRequested() const;
 	void notifyAngleChanged(CameraConfigurations *new_config) const;
 	void notifyModifiedOptions(CameraConfigurations *new_config);
+
+	bool wasCameraOptionsModified(const CameraConfigurations *new_config) const;
 };
 
 

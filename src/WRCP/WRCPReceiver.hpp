@@ -29,8 +29,6 @@ private:
 	MessageQueue<WRCP> *incoming_queue;
 	MessageQueue<WRCP> *outcoming_queue;
 	std::vector<int> list_message_numbers;
-	//int list_message_numbers[255];
-	//int list_pointer;
 	MiniModem modem;
 
 	void clearBuffer();

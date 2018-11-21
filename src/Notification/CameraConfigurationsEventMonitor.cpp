@@ -72,10 +72,7 @@ void CameraConfigurationsEventMonitor::generateNotification() {
 	auto new_config = new CameraConfigurations;
 	new_config->loadConfigurations(directory + "/" + filename);
 
-	if (this->config->active != new_config->active)
-		notifyCamera(new_config);
-
-	if (this->config->timer != new_config->timer || this->config->sensor != new_config->sensor)
+	if (wasCameraOptionsModified(new_config))
 		notifyModifiedOptions(new_config);
 
 	if (this->config->horizontal != new_config->horizontal || this->config->vertical != new_config->vertical)
@@ -89,17 +86,12 @@ void CameraConfigurationsEventMonitor::generateNotification() {
 	this->config = new_config;
 }
 
-void CameraConfigurationsEventMonitor::notifyPhotoRequested() const {
-	notification_queue->post(Notification(NotificationType::REQUEST_CAPTURE, camera_id));
+bool CameraConfigurationsEventMonitor::wasCameraOptionsModified(const CameraConfigurations *new_config) const {
+	return config->timer != new_config->timer || config->sensor != new_config->sensor || config->active != new_config->active;
 }
 
-void CameraConfigurationsEventMonitor::notifyCamera(const CameraConfigurations *new_config) const {
-	if (new_config->active) {
-		notification_queue->post(Notification(NotificationType::ACTIVATE, camera_id));
-		return;
-	}
-
-	notification_queue->post(Notification(NotificationType::INACTIVATE, camera_id));
+void CameraConfigurationsEventMonitor::notifyPhotoRequested() const {
+	notification_queue->post(Notification(NotificationType::REQUEST_CAPTURE, camera_id));
 }
 
 void CameraConfigurationsEventMonitor::notifyAngleChanged(CameraConfigurations *new_config) const {
@@ -107,5 +99,7 @@ void CameraConfigurationsEventMonitor::notifyAngleChanged(CameraConfigurations *
 }
 
 void CameraConfigurationsEventMonitor::notifyModifiedOptions(CameraConfigurations *new_config) {
-	notification_queue->post(Notification(NotificationType::MODIFY_OPTIONS, (bool)new_config->timer, (bool)new_config->sensor, camera_id));
+	notification_queue->post(
+			Notification(NotificationType::MODIFY_OPTIONS, (bool) new_config->timer, (bool) new_config->sensor, (bool)new_config->active,
+			             camera_id));
 }

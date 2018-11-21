@@ -352,12 +352,12 @@ void WRCPController::sendAngleChange(int8_t receiver_id, int8_t angle_h, int8_t 
 	std::cout << "Camera angle changed!" << std::endl;
 }
 
-void WRCPController::sendCameraOptions(int8_t receiver_id, int8_t timer_for_capture, int8_t use_sensor, int8_t camera_id) {
+void WRCPController::sendCameraOptions(int8_t receiver_id, int8_t timer_for_capture, int8_t use_sensor, int8_t enable, int8_t camera_id) {
 	if (this->isSlave())
 		throw WRCPPermissionException(1, "Slave can't send this packet!");
 
 	WRCP options_packet;
-	options_packet.createCameraOptions(receiver_id, timer_for_capture, use_sensor, camera_id);
+	options_packet.createCameraOptions(receiver_id, timer_for_capture, use_sensor, enable, camera_id);
 
 	this->outcoming_packets.post(options_packet);
 
@@ -392,7 +392,7 @@ void WRCPController::sendRequestPhoto(int8_t receiver_id, int8_t camera_id) {
 
 void WRCPController::processMasterNotification(Notification notification) {
 	if (notification.type == NotificationType::MODIFY_OPTIONS) {
-		this->sendCameraOptions(!id, notification.timer, notification.sensor, notification.camera_id);
+		this->sendCameraOptions(!id, notification.timer, notification.sensor, notification.enable, notification.camera_id);
 		return;
 	}
 

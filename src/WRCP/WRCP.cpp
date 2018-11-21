@@ -163,7 +163,7 @@ void WRCP::createAngleChange(int8_t receiver_id, int8_t angle_h, int8_t angle_v,
 	this->packet.checksum = this->calculateChecksum();
 }
 
-void WRCP::createCameraOptions(int8_t receiver_id, int8_t timer_for_capture, int8_t use_sensor, int8_t camera_id) {
+void WRCP::createCameraOptions(int8_t receiver_id, int8_t timer_for_capture, int8_t use_sensor, int8_t enable, int8_t camera_id) {
 	this->addProtocolIdentifier();
 	this->packet.sender_id = 0;
 	this->packet.receiver_id = receiver_id;
@@ -171,6 +171,7 @@ void WRCP::createCameraOptions(int8_t receiver_id, int8_t timer_for_capture, int
 	this->packet.action = this->getCameraOptionsAction();
 	this->packet.data[0] = timer_for_capture;
 	this->packet.data[1] = use_sensor;
+	this->packet.data[2] = enable;
 	this->packet.data[4] = camera_id;
 	this->packet.checksum = this->calculateChecksum();
 }
@@ -209,6 +210,10 @@ int8_t WRCP::getTimerForCapture() {
 
 int8_t WRCP::getUseSensor() {
 	return this->packet.data[1];
+}
+
+int8_t WRCP::getCameraEnable() {
+	return this->packet.data[2];
 }
 
 bool WRCP::operator==(WRCP &packet) const {
