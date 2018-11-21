@@ -5,6 +5,7 @@
 #include <iostream>
 
 int8_t WRCP::packet_number = 0;
+std::mutex WRCP::m_number;
 
 WRCP::WRCP(unsigned char *buffer) {
 	memcpy(&this->packet, buffer, WRCP_PACKET_SIZE);
@@ -71,6 +72,7 @@ int8_t WRCP::getACKAction() {
 }
 
 int8_t WRCP::getPacketNumber() {
+	std::lock_guard<std::mutex> lock(m_number);
 	uint8_t number = WRCP::packet_number++;
 	if (number == 255)
 		WRCP::packet_number = 0;

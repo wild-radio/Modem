@@ -6,6 +6,7 @@ static const int WRCP_ACTIVATE_SENSOR = 0x00;
 static const int WRCP_DEACTIVATE_SENSOR = 0x01;
 
 #include <cstdint>
+#include <mutex>
 
 struct _wrcp_packet {
 	char protocol_identifier[4];
@@ -63,6 +64,7 @@ public:
 
 private:
 	static int8_t packet_number;
+	static std::mutex m_number;
 	_wrcp_packet packet;
 
 	void addProtocolIdentifier();

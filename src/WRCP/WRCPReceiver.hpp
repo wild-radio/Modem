@@ -17,7 +17,7 @@ public:
 		this->receiving = false;
 		this->incoming_queue = incoming_queue;
 		this->outcoming_queue = outcoming_queue;
-		list_pointer = 0;
+		//list_pointer = 0;
 	}
 
 	void run() override;
@@ -28,8 +28,9 @@ private:
 	bool receiving;
 	MessageQueue<WRCP> *incoming_queue;
 	MessageQueue<WRCP> *outcoming_queue;
-	int list_message_numbers[255];
-	int list_pointer;
+	std::vector<int> list_message_numbers;
+	//int list_message_numbers[255];
+	//int list_pointer;
 	MiniModem modem;
 
 	void clearBuffer();
