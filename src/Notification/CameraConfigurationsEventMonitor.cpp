@@ -32,14 +32,14 @@ void CameraConfigurationsEventMonitor::run() {
 void CameraConfigurationsEventMonitor::monitor() {
 	int length;
 	char buffer[(1024 * ((sizeof(struct inotify_event)) + 16))];
+	int last_event_timestamp = this->getTimestamp();
 	while (1) {
 		length = read(fd, buffer, (1024 * ((sizeof(struct inotify_event)) + 16)));
 
 		if (length < 0) {
 			std::perror("read");
 		}
-
-		processEvent(length, buffer);
+		last_event_timestamp = processEvent(length, buffer, last_event_timestamp);
 	}
 }
 
@@ -48,9 +48,8 @@ CameraConfigurationsEventMonitor::~CameraConfigurationsEventMonitor() {
 	close(fd);
 }
 
-void CameraConfigurationsEventMonitor::processEvent(int length, const char *buffer) {
+int CameraConfigurationsEventMonitor::processEvent(int length, const char *buffer, int last_event_timestamp) {
 	int i = 0;
-	int last_event_timestamp = this->getTimestamp();
 	while (i < length) {
 		inotify_event *event = (struct inotify_event *)&buffer[i];
 
@@ -59,19 +58,20 @@ void CameraConfigurationsEventMonitor::processEvent(int length, const char *buff
 
 		i += EVENT_SIZE + event->len;
 
-
-		last_event_timestamp = executeIfIsMyEvent(last_event_timestamp, event);
+		if (wasMyConfigModified(event)) {
+			last_event_timestamp = executeEventIfItIsNotTooSoon(last_event_timestamp);
+		}
 	}
+	return last_event_timestamp;
 }
 
-int CameraConfigurationsEventMonitor::executeIfIsMyEvent(int last_event_timestamp, const inotify_event *event) {
-	if (wasMyConfigModified(event)) {
-			if (getTimestamp() - last_event_timestamp < 2) {
-				return last_event_timestamp;
-			}
-			generateNotification();
-			last_event_timestamp = getTimestamp();
+int CameraConfigurationsEventMonitor::executeEventIfItIsNotTooSoon(int last_event_timestamp) {
+		if (getTimestamp() - last_event_timestamp < 2) {
+			return last_event_timestamp;
 		}
+		generateNotification();
+		last_event_timestamp = getTimestamp();
+
 	return last_event_timestamp;
 }
 

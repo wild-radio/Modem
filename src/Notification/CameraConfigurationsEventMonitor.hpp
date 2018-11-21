@@ -27,7 +27,7 @@ private:
 	std::string filename;
 
 	void monitor();
-	void processEvent(int length, const char *buffer);
+	int processEvent(int length, const char *buffer, int last_event_timestamp);
 	bool wasMyConfigModified(const inotify_event *event) const;
 	void generateNotification();
 
@@ -40,7 +40,7 @@ private:
 
 	int getTimestamp() const;
 
-	int executeIfIsMyEvent(int last_event_timestamp, const inotify_event *event);
+	int executeEventIfItIsNotTooSoon(int last_event_timestamp);
 };
 
 
