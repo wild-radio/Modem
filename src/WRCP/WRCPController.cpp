@@ -64,7 +64,7 @@ void WRCPController::startSlaveNotifications() {
 
 void WRCPController::mainLoop() {
 	this->id_with_transmission_rights = 0;
-	int last_recived_timestamp = 0;
+	int last_recived_timestamp = this->getTimestamp();
 	while (true) {
 		delay(100);
 		if (this->incoming_packets.hasMessage()) {
@@ -83,7 +83,7 @@ void WRCPController::mainLoop() {
 }
 
 bool WRCPController::isEnoughWaitingTimeForTransmission(int last_recived_timestamp) const {
-	return getTimestamp() - last_recived_timestamp > DEFAULT_TIMEOUT * 2;
+	return getTimestamp() - last_recived_timestamp > DEFAULT_TIMEOUT + 7;
 }
 
 void WRCPController::handlePacket() {

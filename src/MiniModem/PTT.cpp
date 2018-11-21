@@ -4,7 +4,8 @@
 
 PTT::PTT() {
 	wiringPiSetup();
-	pinMode (GPIO_PIN, OUTPUT) ;
+	pinMode (GPIO_PIN, OUTPUT);
+	digitalWrite (GPIO_PIN, LOW);
 }
 
 void PTT::push() {
