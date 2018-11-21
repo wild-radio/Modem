@@ -68,6 +68,7 @@ bool CameraConfigurationsEventMonitor::wasMyConfigModified(const inotify_event *
 }
 
 void CameraConfigurationsEventMonitor::generateNotification() {
+	sleep(1);
 	auto new_config = new CameraConfigurations;
 	new_config->loadConfigurations(directory + "/" + filename);
 
