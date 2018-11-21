@@ -2,7 +2,7 @@
 #define MODEM_WRCPTRANSMITTER_HPP
 
 
-static const int BUFFER_SIZE_TRANSMITTER = 20;
+static const int BUFFER_SIZE_TRANSMITTER = 30;
 
 #include "../ThreadInterface.hpp"
 #include "WRCP.hpp"
