@@ -1,7 +1,7 @@
 #ifndef MODEM_WRCPRECEIVER_HPP
 #define MODEM_WRCPRECEIVER_HPP
 
-static const int MAX_RECEIVED_PACKETS_BUFFER = 15;
+static const int MAX_RECEIVED_PACKETS_BUFFER = 4;
 
 #include <vector>
 #include "../ThreadInterface.hpp"
