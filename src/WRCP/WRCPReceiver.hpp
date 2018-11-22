@@ -29,6 +29,7 @@ private:
 	MessageQueue<WRCP> *incoming_queue;
 	MessageQueue<WRCP> *outcoming_queue;
 	std::vector<int> list_message_numbers;
+	int last_message_number;
 	MiniModem modem;
 
 	void clearBuffer();

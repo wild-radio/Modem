@@ -184,9 +184,9 @@ void WRCPController::processPacket(WRCP packet) {
 		return;
 	}
 
-	if (this->id == 0 && packet.getSender() != this->id_with_transmission_rights) {
+	/*if (this->id == 0 && packet.getSender() != this->id_with_transmission_rights) {
 		return;
-	}
+	}*/
 
 	if (packet.isPhoto()) {
 		handlePhotoReciever(packet);

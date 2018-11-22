@@ -69,10 +69,13 @@ void WRCPReceiver::addToBuffer(unsigned char byte) {
 }
 
 bool WRCPReceiver::isInOurList(int message_number) {
-	for (int i = 0; i < list_message_numbers.size(); i++) {
+	/*for (int i = 0; i < list_message_numbers.size(); i++) {
 		if (list_message_numbers[i] == message_number)
 			return true;
 	}
+	return false;*/
+	if (last_message_number == message_number)
+		return true;
 	return false;
 }
 
@@ -84,8 +87,9 @@ void WRCPReceiver::sendACK(WRCP packet) {
 }
 
 void WRCPReceiver::addToOurList(int message_number) {
-	list_message_numbers.insert(list_message_numbers.begin(), message_number);
+	/*list_message_numbers.insert(list_message_numbers.begin(), message_number);
 	//list_message_numbers.push_back(message_number);
 	if (list_message_numbers.size() > MAX_RECEIVED_PACKETS_BUFFER)
-		list_message_numbers.pop_back();
+		list_message_numbers.pop_back();*/
+	last_message_number = message_number;
 }
