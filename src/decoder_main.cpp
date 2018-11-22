@@ -12,13 +12,13 @@ int main(int argc, char **argv) {
 	std::string path = argv[3];
 
 	std::stringstream photo_filename;
-	photo_filename << "CAM" << camera_id << "_ " << timestamp << ".ppm";
+	photo_filename << "CAM" << camera_id << "_" << timestamp << ".ppm";
 
 	Robot36Decoder decoder;
 	decoder.decoder(photo_filename.str());
 
 	std::stringstream png_filename;
-	png_filename << "CAM" << camera_id << "_ "  << timestamp << ".png";
+	png_filename << "CAM" << camera_id << "_"  << timestamp << ".png";
 	convertPPMToPNG(photo_filename.str(), png_filename.str());
 
 	SendPhotoToServer sender;
