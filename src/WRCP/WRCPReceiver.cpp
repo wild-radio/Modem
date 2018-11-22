@@ -5,27 +5,29 @@ void WRCPReceiver::run() {
 	this->receiving = false;
 	bool received_w = false;
 	this->buffer = new unsigned char[WRCP_PACKET_SIZE];
-	unsigned char byte;
+	unsigned char byte[15];
 
 	while (true) {
-		int len = modem.readData(&byte, 1);
-		if (len == 0)
-			continue;
-		if (byte == 'W') {
-			received_w = true;
-		}
+		int len = modem.readData(byte, 1);
+		for (int i = 0; i < len; i++ ) {
+			/*if (len == 0)
+				continue;*/
+			if (byte[i] == 'W') {
+				received_w = true;
+			}
 
-		if (byte == 'R' && received_w) {
-			this->receiving = true;
-			received_w = false;
-			clearBuffer();
-			this->addToBuffer('W');
-			this->addToBuffer('R');
-			continue;
-		}
+			if (byte[i] == 'R' && received_w) {
+				this->receiving = true;
+				received_w = false;
+				clearBuffer();
+				this->addToBuffer('W');
+				this->addToBuffer('R');
+				continue;
+			}
 
-		if (this->receiving) {
-			this->addToBuffer(byte);
+			if (this->receiving) {
+				this->addToBuffer(byte[i]);
+			}
 		}
 	}
 }
