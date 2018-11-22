@@ -6,7 +6,10 @@
 #include "SSTV/Robot36Decoder.hpp"
 
 int main(int argc, char **argv) {
-	auto id = std::stoi(std::string(argv[1]));
+	std::string path = argv[1];
+	Robot36Encoder encoder;
+	encoder.encode(path);
+	/*auto id = std::stoi(std::string(argv[1]));
 	WRCPController controller(id);
 
 	controller.startReceiver();
@@ -16,5 +19,5 @@ int main(int argc, char **argv) {
 		controller.mainLoop();
 	}
 	controller.startMasterNotifications();
-	controller.mainLoop();
+	controller.mainLoop();*/
 }
