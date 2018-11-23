@@ -71,6 +71,7 @@ void WRCPController::mainLoop() {
 		if (this->incoming_packets.hasMessage()) {
 			this->handlePacket();
 			last_received_timestamp = this->getTimestamp();
+			this->request_photo = false;
 		}
 
 		if (id == 0 && this->request_photo)
@@ -87,7 +88,7 @@ void WRCPController::mainLoop() {
 }
 
 bool WRCPController::isEnoughWaitingTimeForTransmission(int last_recived_timestamp) const {
-	return getTimestamp() - last_recived_timestamp > DEFAULT_TIMEOUT + 10;
+	return getTimestamp() - last_recived_timestamp > DEFAULT_TIMEOUT * 2 + 2;
 }
 
 void WRCPController::handlePacket() {
@@ -303,7 +304,7 @@ bool WRCPController::sendRequestSendingRights() {
 
 	this->outcoming_packets.post(request_packet);
 
-	bool success = handleACKAndNACK(request_packet, 5, -1);
+	bool success = handleACKAndNACK(request_packet, 5, DEFAULT_TIMEOUT);
 	if (!success) {
 		std::cout << "Failed requesting permission to comunicate!" << std::endl;
 		return false;
@@ -337,6 +338,7 @@ void WRCPController::sendPhoto(int32_t timestamp, int8_t camera_id, std::string 
 	sstv_encoder.encode(photo_path);
 
 	std::cout << "Image transmitted!" << std::endl;
+	sleep(2);
 }
 
 void WRCPController::sendAngleChange(int8_t receiver_id, int8_t angle_h, int8_t angle_v, int8_t camera_id) {
