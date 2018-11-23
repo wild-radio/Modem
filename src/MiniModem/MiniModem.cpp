@@ -17,7 +17,7 @@ void MiniModem::writeData(const unsigned char *data, int size) {
 }
 
 int MiniModem::readData(unsigned char *data, int size) {
-	if (read_stream == nullptr || feof(this->read_stream)) {
+	if (read_stream == nullptr) {
 		read_stream = popen((RX_COMMAND + " 2>/dev/null").c_str(), "r");
 	}
 
