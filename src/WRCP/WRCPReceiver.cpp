@@ -1,14 +1,15 @@
 #include <iostream>
 #include "WRCPReceiver.hpp"
+#include "../MiniModem/MinimodemResolver.hpp"
 
 void WRCPReceiver::run() {
 	this->receiving = false;
 	bool received_w = false;
 	this->buffer = new unsigned char[WRCP_PACKET_SIZE];
 	unsigned char byte[15];
-
+	MiniModem *modem = MinimodemResolver::resolve();
 	while (true) {
-		int len = modem.readData(byte, 1);
+		int len = modem->readData(byte, 15);
 		for (int i = 0; i < len; i++ ) {
 			/*if (len == 0)
 				continue;*/

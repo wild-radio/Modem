@@ -18,7 +18,6 @@ public:
 
 private:
 	MessageQueue<WRCP> *outcoming_packets;
-	MiniModem modem;
 };
 
 
