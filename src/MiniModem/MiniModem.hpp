@@ -10,7 +10,7 @@
 class MiniModem : public ModemInterface {
 public:
 	MiniModem() {
-		this->read_stream = nullptr;
+		this->read_stream = popen((RX_COMMAND + " 2>/dev/null").c_str(), "r");;
 		this->write_stream = nullptr;
 	}
 	void writeData(const unsigned char *data, int size) override;
