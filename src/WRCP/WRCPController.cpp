@@ -64,20 +64,24 @@ void WRCPController::startSlaveNotifications() {
 
 void WRCPController::mainLoop() {
 	this->id_with_transmission_rights = 0;
-	int last_recived_timestamp = this->getTimestamp();
+	int last_received_timestamp = this->getTimestamp();
+
 	while (true) {
 		delay(100);
 		if (this->incoming_packets.hasMessage()) {
 			this->handlePacket();
-			last_recived_timestamp = this->getTimestamp();
+			last_received_timestamp = this->getTimestamp();
 		}
-		if (this->request_photo)
+
+		if (id == 0 && this->request_photo)
 			continue;
-		if (id != 0 && isEnoughWaitingTimeForTransmission(last_recived_timestamp))
+
+		if (id != 0 && !isEnoughWaitingTimeForTransmission(last_received_timestamp))
 			continue;
+
 		if (this->incoming_notifications.hasMessage()) {
 			this->handleNotifications();
-			last_recived_timestamp = this->getTimestamp();
+			last_received_timestamp = this->getTimestamp();
 		}
 	}
 }

@@ -8,7 +8,7 @@ void MiniModem::writeData(const unsigned char *data, int size) {
 
 	this->ptt = PTTResolver::resolve();
 	this->write_stream = popen(command.c_str(), "w");
-	
+
 	if (write_stream == nullptr) {
 		throw StreamException(1, "Failed to open the write_stream!");
 	}
