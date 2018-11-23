@@ -9,7 +9,7 @@ void WRCPReceiver::run() {
 	unsigned char byte[15];
 	MiniModem *modem = MinimodemResolver::resolve();
 	while (true) {
-		int len = modem->readData(byte, 15);
+		int len = modem->readData(byte, 1);
 		for (int i = 0; i < len; i++ ) {
 			/*if (len == 0)
 				continue;*/
