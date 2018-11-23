@@ -13,6 +13,7 @@ void MiniModem::writeData(const unsigned char *data, int size) {
 
 	this->ptt->push();
 	fwrite(data, sizeof(char), (size_t) size, stream);
+	pclose(stream);
 	this->ptt->release();
 }
 
