@@ -348,7 +348,7 @@ void WRCPController::sendAngleChange(int8_t receiver_id, int8_t angle_h, int8_t 
 
 	this->outcoming_packets.post(angle_packet);
 
-	bool success = handleACKAndNACK(angle_packet, 3, DEFAULT_TIMEOUT);
+	bool success = handleACKAndNACK(angle_packet, 5, DEFAULT_TIMEOUT);
 	if (!success) {
 		std::cout << "Failed trying to change camera angle!" << std::endl;
 		return;
@@ -366,7 +366,7 @@ void WRCPController::sendCameraOptions(int8_t receiver_id, int8_t timer_for_capt
 
 	this->outcoming_packets.post(options_packet);
 
-	bool success = handleACKAndNACK(options_packet, 3, DEFAULT_TIMEOUT);
+	bool success = handleACKAndNACK(options_packet, 5, DEFAULT_TIMEOUT);
 	if (!success) {
 		std::cout << "Failed trying to change camera options!" << std::endl;
 		return;
@@ -384,7 +384,7 @@ void WRCPController::sendRequestPhoto(int8_t receiver_id, int8_t camera_id) {
 
 	this->outcoming_packets.post(request_photo_packet);
 
-	bool success = handleACKAndNACK(request_photo_packet, 3, DEFAULT_TIMEOUT + 4);
+	bool success = handleACKAndNACK(request_photo_packet, 5, DEFAULT_TIMEOUT + 4);
 	if (!success) {
 		std::cout << "Failed requesting photo!" << std::endl;
 		return;
