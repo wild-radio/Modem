@@ -4,18 +4,19 @@
 
 
 void MiniModem::writeData(const unsigned char *data, int size) {
-	std::string command = TX_COMMAND;
-	pclose(read_stream);
-	read_stream = nullptr;
-	std::FILE *stream = popen(command.c_str(), "w");
-	this->ptt = PTTResolver::resolve();
-	if (stream == nullptr) {
-		throw StreamException(1, "Failed to open the stream!");
+	if (write_stream == nullptr) {
+		std::string command = TX_COMMAND;
+		std::FILE *stream = popen(command.c_str(), "w");
+		this->ptt = PTTResolver::resolve();
+	}
+
+	if (write_stream == nullptr) {
+		throw StreamException(1, "Failed to open the write_stream!");
 	}
 
 	this->ptt->push();
-	fwrite(data, sizeof(char), (size_t) size, stream);
-	pclose(stream);
+	fwrite(data, sizeof(char), (size_t) size, write_stream);
+	pclose(write_stream);
 	this->ptt->release();
 }
 
@@ -25,7 +26,7 @@ int MiniModem::readData(unsigned char *data, int size) {
 	}
 
 	if (this->read_stream == nullptr) {
-		throw StreamException(1, "Failed to open the stream!");
+		throw StreamException(1, "Failed to open the write_stream!");
 	}
 
 	return fread(data, sizeof(unsigned char), size, this->read_stream);
