@@ -5,7 +5,8 @@
 
 void MiniModem::writeData(const unsigned char *data, int size) {
 	std::string command = TX_COMMAND;
-	pclose(this->read_stream);
+	pclose(read_stream);
+	read_stream = nullptr;
 	std::FILE *stream = popen(command.c_str(), "w");
 	this->ptt = PTTResolver::resolve();
 	if (stream == nullptr) {
