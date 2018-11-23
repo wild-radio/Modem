@@ -51,6 +51,7 @@ void WRCPReceiver::addToBuffer(unsigned char byte) {
 	WRCP packet = WRCP(this->buffer);
 	auto valid = packet.isValidChecksum();
 	if (!valid) {
+		std::cout << "Checksum error!" << std::endl;
 		this->receiving = false;
 		clearBuffer();
 		return;

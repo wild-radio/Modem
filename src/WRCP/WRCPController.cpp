@@ -87,7 +87,7 @@ void WRCPController::mainLoop() {
 }
 
 bool WRCPController::isEnoughWaitingTimeForTransmission(int last_recived_timestamp) const {
-	return getTimestamp() - last_recived_timestamp > DEFAULT_TIMEOUT + 7;
+	return getTimestamp() - last_recived_timestamp > DEFAULT_TIMEOUT + 10;
 }
 
 void WRCPController::handlePacket() {

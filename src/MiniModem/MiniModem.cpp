@@ -20,22 +20,6 @@ void MiniModem::writeData(const unsigned char *data, int size) {
 }
 
 int MiniModem::readData(unsigned char *data, int size) {
-	this->checkForRestart();
-	std::lock_guard<std::mutex> lock(mutex);
 	return fread(data, sizeof(unsigned char), size, this->read_stream);
-}
-
-void MiniModem::checkForRestart() {
-	if (this->getTimestamp() - last_start_timestamp > 2 * 60) {
-		std::lock_guard<std::mutex> lock(mutex);
-		system("killall minimodem");
-		this->read_stream = openReadStream();
-		last_start_timestamp = this->getTimestamp();
-	}
-}
-
-int MiniModem::getTimestamp() {
-	time_t timestamp = time(nullptr);
-	return (int)timestamp;
 }
 
