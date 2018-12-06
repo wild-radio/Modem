@@ -6,6 +6,7 @@
 #include "SSTV/Robot36Decoder.hpp"
 
 int main(int argc, char **argv) {
+	std::cout << sizeof(_wrcp_packet) << std::endl;
 	std::string parameter = argv[1];
 
 	if (parameter == "send") {

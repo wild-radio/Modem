@@ -7,7 +7,7 @@ void WRCPReceiver::run() {
 	this->receiving = false;
 	bool received_w = false;
 	bool received_r = false;
-	this->buffer = new unsigned char[WRCP_PACKET_SIZE];
+	this->buffer = new unsigned char[sizeof(_wrcp_packet)];
 	unsigned char byte[15];
 	this->clearBuffer();
 	MiniModem *modem = MinimodemResolver::resolve();
@@ -54,7 +54,7 @@ void WRCPReceiver::run() {
 
 void WRCPReceiver::clearBuffer() {
 	this->buffer_pos = 0;
-	bzero(this->buffer, WRCP_PACKET_SIZE);
+	bzero(this->buffer, sizeof(_wrcp_packet));
 	/*if ()
 	delete this->buffer;
 	this->buffer = new unsigned char[WRCP_PACKET_SIZE];*/
@@ -64,7 +64,7 @@ void WRCPReceiver::addToBuffer(unsigned char byte) {
 	this->buffer[this->buffer_pos] = byte;
 	this->buffer_pos++;
 
-	if (this->buffer_pos != WRCP_PACKET_SIZE) {
+	if (this->buffer_pos != sizeof(_wrcp_packet)) {
 		return;
 	}
 	this->receiving = false;

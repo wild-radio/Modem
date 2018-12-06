@@ -17,7 +17,7 @@ void WRCPTransmitter::run() {
 		WRCP packet = this->outcoming_packets->pull();
 		bzero(data, BUFFER_SIZE_TRANSMITTER);
 		unsigned char *wrcp_data = packet.getData();
-		memcpy(data + 10, wrcp_data, (size_t)WRCP_PACKET_SIZE);
+		memcpy(data + 10, wrcp_data, sizeof(_wrcp_packet));
 		modem->writeData(data, BUFFER_SIZE_TRANSMITTER);
 	}
 }

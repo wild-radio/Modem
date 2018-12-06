@@ -9,7 +9,7 @@ int8_t WRCP::packet_number = 0;
 std::mutex WRCP::m_number;
 
 WRCP::WRCP(unsigned char *buffer) {
-	memcpy(&this->packet, buffer, WRCP_PACKET_SIZE);
+	memcpy(&this->packet, buffer, sizeof(_wrcp_packet));
 }
 
 void WRCP::print() {
