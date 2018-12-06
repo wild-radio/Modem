@@ -157,6 +157,8 @@ void WRCP::createAngleChange(int8_t receiver_id, int8_t angle_h, int8_t angle_v,
 	this->packet.action = this->getAngleChangeAction();
 	this->packet.data[0] = angle_h;
 	this->packet.data[1] = angle_v;
+	this->packet.data[2] = 0;
+	this->packet.data[3] = 0;
 	this->packet.data[4] = camera_id;
 	this->packet.checksum = this->calculateChecksum();
 }
@@ -170,6 +172,7 @@ void WRCP::createCameraOptions(int8_t receiver_id, int8_t timer_for_capture, int
 	this->packet.data[0] = timer_for_capture;
 	this->packet.data[1] = use_sensor;
 	this->packet.data[2] = enable;
+	this->packet.data[3] = 0;
 	this->packet.data[4] = camera_id;
 	this->packet.checksum = this->calculateChecksum();
 }
@@ -180,6 +183,10 @@ void WRCP::createRequestPhoto(int8_t receiver_id, int8_t camera_id) {
 	this->packet.receiver_id = receiver_id;
 	this->packet.message_number = this->getPacketNumber();
 	this->packet.action = this->getRequestPhotoAction();
+	this->packet.data[0] = 0;
+	this->packet.data[1] = 0;
+	this->packet.data[2] = 0;
+	this->packet.data[3] = 0;
 	this->packet.data[4] = camera_id;
 	this->packet.checksum = this->calculateChecksum();
 }

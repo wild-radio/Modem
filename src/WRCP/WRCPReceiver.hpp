@@ -17,6 +17,7 @@ public:
 		this->receiving = false;
 		this->incoming_queue = incoming_queue;
 		this->outcoming_queue = outcoming_queue;
+		this->last_message_number = 0;
 		//list_pointer = 0;
 	}
 
