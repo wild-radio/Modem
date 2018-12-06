@@ -92,13 +92,13 @@ int16_t WRCP::calculateChecksum() {
 void WRCP::getPartsForChecksum(int16_t *parts) {
 	//Necessary so we dont count the checksum field
 	int jump_checksum = 0;
-	for (int i = 0; i < 6; i++) {
+	for (int i = 0; i < 7; i++) {
 		if (i == 4)
 			jump_checksum = 1;
 		memcpy(parts + i, ((int16_t*)&this->packet) + i + jump_checksum, 2);
 	}
 	//Last part needs to be shifted
-	parts[6] = ((int16_t)this->packet.data[4]) << 8;
+	//parts[6] = ((int16_t)this->packet.data[4]) << 8;
 }
 
 bool WRCP::isValidChecksum() {
