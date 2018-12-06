@@ -95,7 +95,7 @@ void WRCP::getPartsForChecksum(int16_t *parts) {
 	for (int i = 0; i < 6; i++) {
 		if (i == 4)
 			jump_checksum = 1;
-		memcpy(parts + i, ((char16_t*)&this->packet) + i + jump_checksum, 2);
+		memcpy(parts + i, ((int16_t*)&this->packet) + i + jump_checksum, 2);
 	}
 	//Last part needs to be shifted
 	parts[6] = ((int16_t)this->packet.data[4]) << 8;

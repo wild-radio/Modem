@@ -1,12 +1,15 @@
 #include <iostream>
+#include <strings.h>
 #include "WRCPReceiver.hpp"
 #include "../MiniModem/MinimodemResolver.hpp"
 
 void WRCPReceiver::run() {
 	this->receiving = false;
 	bool received_w = false;
+	bool received_r = false;
 	this->buffer = new unsigned char[WRCP_PACKET_SIZE];
 	unsigned char byte[15];
+	this->clearBuffer();
 	MiniModem *modem = MinimodemResolver::resolve();
 	while (true) {
 		int len = modem->readData(byte, 1);
@@ -15,19 +18,35 @@ void WRCPReceiver::run() {
 				continue;*/
 			if (byte[i] == 'W') {
 				received_w = true;
+				continue;
 			}
 
 			if (byte[i] == 'R' && received_w) {
+				received_r = true;
+				continue;
+			}
+
+			if (byte[i] == 'C' && received_r) {
 				this->receiving = true;
 				received_w = false;
+				received_r = false;
 				clearBuffer();
 				this->addToBuffer('W');
 				this->addToBuffer('R');
+				this->addToBuffer('C');
 				continue;
 			}
 
 			if (this->receiving) {
 				this->addToBuffer(byte[i]);
+				continue;
+			}
+
+			if (received_w) {
+				received_w = false;
+			}
+			if (received_r) {
+				received_r = false;
 			}
 		}
 	}
@@ -35,6 +54,7 @@ void WRCPReceiver::run() {
 
 void WRCPReceiver::clearBuffer() {
 	this->buffer_pos = 0;
+	bzero(this->buffer, WRCP_PACKET_SIZE);
 	/*if ()
 	delete this->buffer;
 	this->buffer = new unsigned char[WRCP_PACKET_SIZE];*/
@@ -47,13 +67,13 @@ void WRCPReceiver::addToBuffer(unsigned char byte) {
 	if (this->buffer_pos != WRCP_PACKET_SIZE) {
 		return;
 	}
+	this->receiving = false;
 
 	WRCP packet = WRCP(this->buffer);
+	this->clearBuffer();
 	auto valid = packet.isValidChecksum();
 	if (!valid) {
 		std::cout << "Checksum error!" << std::endl;
-		this->receiving = false;
-		clearBuffer();
 		return;
 	}
 
@@ -67,9 +87,6 @@ void WRCPReceiver::addToBuffer(unsigned char byte) {
 	if (isNotAckNorNack)
 		this->addToOurList(message_number);
 	this->incoming_queue->post(packet);
-
-	this->receiving = false;
-	this->clearBuffer();
 }
 
 bool WRCPReceiver::isInOurList(int message_number) {
